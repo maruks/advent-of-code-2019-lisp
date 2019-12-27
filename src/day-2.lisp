@@ -48,10 +48,10 @@
 
 (defun solution-2 (target)
   (let* ((code (read-code #p"day-2-input.txt"))
-	 (size (1- (length code)))
+	 (size (length code))
 	 (args (iterate outer
 		 (for i from 0 below size)
 		 (iterate (for j from 0 below size)
-		   (when (eql target (try-input code i j) )
+		   (when (eql target (try-input code i j))
 		     (return-from outer (cons i j)))))))
     (+ (* 100 (car args)) (cdr args))))

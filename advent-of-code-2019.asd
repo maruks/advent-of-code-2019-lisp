@@ -9,7 +9,9 @@
   :depends-on (:iterate :split-sequence)
   :components ((:module "src"
 		:components ((:file "advent-of-code")
-			     (:file "day-1"))))
+			     (:file "day-1")
+			     (:file "day-2")
+			     )))
   :in-order-to ((test-op (test-op "advent-of-code-2019/tests"))))
 
 (defsystem "advent-of-code-2019/tests"
@@ -19,5 +21,6 @@
 	       :assert-p)
   :serial t
   :components ((:module "tests"
-		:components ((:file "day-1-tests"))))
+		:components ((:file "day-1-tests")
+			     (:file "day-2-tests"))))
   :perform (test-op (o c) (symbol-call 'cacau 'run :colorful t :reporter :list)))

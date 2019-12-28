@@ -7,10 +7,15 @@
   :version "0.0.1"
   :serial t
   :depends-on (:iterate :split-sequence)
+  :build-operation "program-op"
+  :build-pathname "advent-of-code"
+  :entry-point "main:main"
+
   :components ((:module "src"
 		:components ((:file "advent-of-code")
 			     (:file "day-1")
 			     (:file "day-2")
+			     (:file "main")
 			     )))
   :in-order-to ((test-op (test-op "advent-of-code-2019/tests"))))
 

@@ -1,4 +1,4 @@
-# advent-of-code-2019
+# Advent of Code 2019
 
 ### Test
 
@@ -11,3 +11,5 @@
 ### Build binary
 
 	sbcl --non-interactive --eval "(ql:quickload :advent-of-code-2019)" --eval "(asdf:make :advent-of-code-2019)"
+
+![Alt text](./made-with-lisp.png?raw=true "AOC 2018")

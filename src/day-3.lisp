@@ -1,6 +1,6 @@
 (defpackage :day-3
   (:use :cl :iterate :split-sequence :advent-of-code)
-  (:export :solution-1 :->points :intersect :closest-intersection))
+  (:export :solution-1 :solution-2 :->points :intersect :closest-intersection :lowest-steps))
 
 (in-package :day-3)
 
@@ -59,10 +59,6 @@
 	  (next-iteration))
 	(in outer (minimize (distance *central-point* (make-point :x (car i) :y (cdr i)))))))))
 
-
-(defparameter m1   	    '((:R . 8) (:U . 5) (:L . 5) (:D . 3) ) )
-(defparameter m2   	    '((:U . 7) (:R . 6) (:D . 4) (:L . 4)) )
-
 (defun lowest-steps (moves-1 moves-2)
   (let ((points-1 (->points moves-1))
 	(points-2 (->points moves-2)))
@@ -71,21 +67,30 @@
       (for p1a :previous p1b)
       (when (first-iteration-p)
 	(next-iteration))
+      (sum (distance p1a p1b) :into steps-1)
       (iterate
 	(for p2b :in points-2)
 	(for p2a :previous p2b)
 	(when (first-iteration-p)
 	  (next-iteration))
+	(sum (distance p2a p2b) :into steps-2)
 	(for i = (intersect p1a p1b p2a p2b))
 	(when (or (null i) (equalp i (cons 0 0)))
 	  (next-iteration))
-	(in outer (minimize (distance *central-point* (make-point :x (car i) :y (cdr i)))))))))
+	(for p = (make-point :x (car i) :y (cdr i)))
+	(in outer (minimize (- (+ steps-1 steps-2) (+ (distance p p1b) (distance p p2b)))))))))
 
 (defun solution-1 ()
   (let* ((input (read-input))
 	 (moves-1 (car input))
 	 (moves-2 (cdr input)))
     (closest-intersection moves-1 moves-2)))
+
+(defun solution-2 ()
+  (let* ((input (read-input))
+	 (moves-1 (car input))
+	 (moves-2 (cdr input)))
+    (lowest-steps moves-1 moves-2)))
 
 (defun intersect-point (hp1 hp2 vp1 vp2)
   (flet ((between (p1 p2 p3) (and (<= p1 p2) (<= p2 p3))))

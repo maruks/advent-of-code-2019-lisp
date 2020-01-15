@@ -13,6 +13,7 @@
   (println (day-2:solution-2 19690720))
   (println "---------------------- day 3 ----------------------")
   (println (day-3:solution-1))
+  (println (day-3:solution-2))
   )
 
 (defun main ()

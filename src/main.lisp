@@ -14,6 +14,9 @@
   (println "---------------------- day 3 ----------------------")
   (println (day-3:solution-1))
   (println (day-3:solution-2))
+  (println "---------------------- day 4 ----------------------")
+  (println (day-4:solution-1 236491 713787))
+  (println (day-4:solution-2 236491 713787))
   )
 
 (defun main ()

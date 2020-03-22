@@ -12,4 +12,4 @@
 
 	sbcl --non-interactive --eval "(ql:quickload :advent-of-code-2019)" --eval "(asdf:make :advent-of-code-2019)"
 
-![Alt text](./made-with-lisp.png?raw=true "AOC 2018")
+![Alt text](./made-with-lisp.png?raw=true "AOC 2019")

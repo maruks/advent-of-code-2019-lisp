@@ -1,5 +1,5 @@
 (defpackage :day-4
-  (:use :cl :iterate :split-sequence :advent-of-code)
+  (:use :cl :advent-of-code)
   (:export :solution-1 :solution-2))
 
 (in-package :day-4)

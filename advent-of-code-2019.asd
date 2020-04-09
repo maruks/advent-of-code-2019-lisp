@@ -6,7 +6,7 @@
   :license "Public license"
   :version "0.0.1"
   :serial t
-  :depends-on (:iterate :split-sequence :alexandria)
+  :depends-on (:iterate :split-sequence)
   :build-operation "program-op"
   :build-pathname "advent-of-code"
   :entry-point "main:main"
@@ -26,6 +26,7 @@
   :license "Public license"
   :depends-on (:advent-of-code-2019
 	       :cacau
+	       :alexandria
 	       :assert-p)
   :serial t
   :components ((:module "tests"

@@ -1,12 +1,8 @@
 (defpackage :day-5
   (:use :cl :iterate :advent-of-code)
-  (:export :solution-1 :run-intcode :solution-2 :decode :run-program))
+  (:export :solution-1 :solution-2 :decode :run-program))
 
 (in-package :day-5)
-
-(defun read-program (file)
-  (let* ((input (read-string #'parse-integer file)))
-    (apply #'vector input)))
 
 (defparameter *add* 1)
 (defparameter *multiply* 2)
@@ -35,8 +31,9 @@
       (+ 4 ip))))
 
 (defun read-input (ip program)
-  (let ((address (svref program (1+ ip))))
-    (setf (svref program address) *input*)
+  (let ((address (svref program (1+ ip)))
+	(input (pop *input*)))
+    (setf (svref program address) input)
     (+ 2 ip)))
 
 (defun write-to-output (ip program &optional param-modes)
@@ -81,14 +78,14 @@
 
 (defun run-program (program input)
   (let ((*input* input))
-    (iterate
+    (iter
       (initially (setq ip 0))
       (for ip next (do-step ip program))
       (while ip)
       (finally (return *output*)))))
 
 (defun solution-1 ()
-  (run-program (read-program #p"day-5-input.txt") 1))
+  (run-program (read-code #p"day-5-input.txt") '(1)))
 
 (defun solution-2 ()
-  (run-program (read-program #p"day-5-input.txt") 5))
+  (run-program (read-code #p"day-5-input.txt") '(5)))

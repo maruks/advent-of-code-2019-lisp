@@ -4,10 +4,6 @@
 
 (in-package :day-2)
 
-(defun read-code (file)
-  (let* ((input (read-string #'parse-integer file)))
-    (apply #'vector input)))
-
 (defparameter *add* 1)
 (defparameter *multiply* 2)
 (defparameter *halt* 99)

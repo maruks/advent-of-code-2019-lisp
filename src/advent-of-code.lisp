@@ -1,6 +1,6 @@
 (defpackage :advent-of-code
   (:use :cl :uiop/stream :split-sequence :iterate )
-  (:export read-file read-lines read-string resource-file
+  (:export read-file read-lines read-string read-code resource-file
 	   make-point point-x point-y distance compare-points))
 
 (in-package :advent-of-code)
@@ -20,6 +20,10 @@
 (defun read-string (parse-fn file &key (split-char #\,))
   (mapcar parse-fn
 	  (split-sequence split-char (read-file-string (resource-file file)))))
+
+(defun read-code (file)
+  (let* ((input (read-string #'parse-integer file)))
+    (apply #'vector input)))
 
 (defstruct (point) x y)
 

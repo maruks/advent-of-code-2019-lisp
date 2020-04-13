@@ -1,6 +1,6 @@
 (defpackage :day-5
   (:use :cl :iterate :advent-of-code)
-  (:export :solution-1 :solution-2 :decode :run-program))
+  (:export :solution-1 :solution-2 :decode :run-program :run-program-1))
 
 (in-package :day-5)
 
@@ -13,9 +13,6 @@
 (defparameter *less-than* 7)
 (defparameter *equals* 8)
 (defparameter *halt* 99)
-
-(defvar *input*)
-(defvar *output*)
 
 (defun get-params (ip program number-of-read-params number-of-params &optional param-modes)
   (when (plusp number-of-params)
@@ -30,15 +27,15 @@
       (setf (svref program result) value)
       (+ 4 ip))))
 
-(defun read-input (ip program)
+(defun read-input (ip program read-fn)
   (let ((address (svref program (1+ ip)))
-	(input (pop *input*)))
+	(input (funcall read-fn)))
     (setf (svref program address) input)
     (+ 2 ip)))
 
-(defun write-to-output (ip program &optional param-modes)
+(defun write-to-output (ip program write-fn &optional param-modes)
   (let ((params (get-params ip program 1 1 param-modes)))
-    (setq *output* (car params))
+    (funcall write-fn (car params))
     (+ 2 ip)))
 
 (defun param-modes (param-modes-number)
@@ -62,13 +59,13 @@
       (setf (svref program address) result)
       (+ 4 ip))))
 
-(defun do-step (ip program)
+(defun do-step (ip program read-fn write-fn)
   (multiple-value-bind (opcode param-modes) (decode (svref program ip))
     (cond
       ((eql opcode *add*) (binary-op #'+ ip program param-modes))
       ((eql opcode *multiply*) (binary-op #'* ip program param-modes))
-      ((eql opcode *in*) (read-input ip program))
-      ((eql opcode *out*) (write-to-output ip program param-modes))
+      ((eql opcode *in*) (read-input ip program read-fn))
+      ((eql opcode *out*) (write-to-output ip program write-fn param-modes))
       ((eql opcode *jmp-if-zero*) (cond-jmp ip program #'zerop param-modes))
       ((eql opcode *jmp-if-not-zero*) (cond-jmp ip program (lambda (x) (not (zerop x))) param-modes))
       ((eql opcode *less-than*) (compare ip program #'< param-modes))
@@ -76,13 +73,21 @@
       ((eql opcode *halt*) nil)
       (t (error "Invalid opcode")))))
 
-(defun run-program (program input)
-  (let ((*input* input))
-    (iter
-      (initially (setq ip 0))
-      (for ip next (do-step ip program))
-      (while ip)
-      (finally (return *output*)))))
+(defun run-program (program inputs)
+  (iter
+    (initially (setq ip 0))
+    (with result)
+    (for ip next (do-step ip program (lambda () (pop inputs)) (lambda (x) (setq result x))))
+    (while ip)
+    (finally (return result))))
+
+(defun run-program-1 (program start-ip inputs)
+  (iter
+    (initially (setq ip start-ip))
+    (with result)
+    (for ip next (do-step ip program (lambda () (pop inputs)) (lambda (x) (setq result x))))
+    (while (and ip (null result)))
+    (finally (return (values ip result)))))
 
 (defun solution-1 ()
   (run-program (read-code #p"day-5-input.txt") '(1)))

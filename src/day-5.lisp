@@ -67,7 +67,7 @@
       ((eql opcode *in*) (read-input ip program read-fn))
       ((eql opcode *out*) (write-to-output ip program write-fn param-modes))
       ((eql opcode *jmp-if-zero*) (cond-jmp ip program #'zerop param-modes))
-      ((eql opcode *jmp-if-not-zero*) (cond-jmp ip program (lambda (x) (not (zerop x))) param-modes))
+      ((eql opcode *jmp-if-not-zero*) (cond-jmp ip program (λ (x) (not (zerop x))) param-modes))
       ((eql opcode *less-than*) (compare ip program #'< param-modes))
       ((eql opcode *equals*) (compare ip program #'eql param-modes))
       ((eql opcode *halt*) nil)
@@ -77,7 +77,7 @@
   (iter
     (initially (setq ip 0))
     (with result)
-    (for ip next (do-step ip program (lambda () (pop inputs)) (lambda (x) (setq result x))))
+    (for ip next (do-step ip program (λ () (pop inputs)) (λ (x) (setq result x))))
     (while ip)
     (finally (return result))))
 
@@ -85,7 +85,7 @@
   (iter
     (initially (setq ip start-ip))
     (with result)
-    (for ip next (do-step ip program (lambda () (pop inputs)) (lambda (x) (setq result x))))
+    (for ip next (do-step ip program (λ () (pop inputs)) (λ (x) (setq result x))))
     (while (and ip (null result)))
     (finally (return (values ip result)))))
 

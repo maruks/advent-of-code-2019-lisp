@@ -1,7 +1,6 @@
 (defpackage :day-10
   (:use :cl :advent-of-code :iterate :alexandria)
-  (:export :read-map :visible-points :best-location-point :solution-1)
-  )
+  (:export :read-map :visible-points :best-location-point :solution-1 :solution-2))
 
 (in-package :day-10)
 
@@ -32,6 +31,9 @@
 (defun remove-hidden (p1 p2 points)
   (remove-if (curry #'is-hidden p1 p2) points))
 
+(defun find-hidden (p1 p2 points)
+  (remove-if-not (curry #'is-hidden p1 p2) points))
+
 (defun visible-points (point-a points &optional result)
   (if result
       (if-let (point-b (car points))
@@ -51,3 +53,46 @@
 (defun solution-1 ()
   (let ((map (read-map (read-input))))
     (max-visible-points map)))
+
+(defun atan-degrees (x)
+  (float (* (/ 180 pi) (atan x))))
+
+(defun angle (dx dy)
+  (cond
+    ((zerop dx) (if (plusp dy) 90.0 -90.0))
+    ((plusp dx) (atan-degrees (float (/ dy dx))))
+    ((minusp dx) (- -180.0 (atan-degrees (- (float (/ dy dx))))) )))
+
+(defun find-next-point (from points &optional (prev-angle 90.0))
+  (let ((x (point-x from))
+	(y (point-y from)))
+    (iter
+      (for p :in points)
+      (for angle = (angle (- (point-x p) x) (- y (point-y p) )))
+      (finding (list p angle) minimizing (- prev-angle angle)))))
+
+(defun collect-points (from points &optional (angle 90.0) result)
+  (flet ((sort-by-distance (p1 p2) (< (dist from p1) (dist from p2))))
+    (if points
+	(destructuring-bind (point next-angle) (find-next-point from points angle)
+	  (collect-points
+	   from
+	   (remove-hidden from point points)
+	   next-angle
+	   (cons (sort (find-hidden from point points) #'sort-by-distance) result)))
+	(make-array (list (length result)) :initial-contents (nreverse result)))))
+
+(defun vaporized (points vec-size nth &optional (index 0) prev-point)
+  (if (zerop nth)
+      prev-point
+      (if-let (point (pop (svref points (mod index vec-size))))
+	(vaporized points vec-size (1- nth) (1+ index) point)
+	(vaporized points vec-size nth (1+ index)))))
+
+(defun vaporized-point (points nth)
+  (let* ((station-point (cadr (best-location-point points)))
+	 (pts (collect-points station-point (remove station-point points :test #'equalp))))
+    (vaporized pts (length pts) nth)))
+
+(defun solution-2 ()
+  (vaporized-point (read-map (read-input)) 200))

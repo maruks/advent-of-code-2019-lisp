@@ -100,3 +100,6 @@
 
 (deftest "solution-1 test" ()
   (eql-p 309 (solution-1)))
+
+(deftest "solution-2 test" ()
+  (equalp-p (make-point :x 4 :y 16) (solution-2)))

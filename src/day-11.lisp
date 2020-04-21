@@ -56,8 +56,8 @@
 (defparameter *height* 100)
 
 (defun get-pixel (x y panels)
-  (let ((px (- x 50))
-	(py (- y 50)))
+  (let ((px (- x (truncate *width* 2)))
+	(py (- y (truncate *height* 2))))
     (* 255 (gethash (cons px py) panels 0))))
 
 (defun draw-image (file panels)

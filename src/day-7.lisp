@@ -29,8 +29,8 @@
     (for in = (if (zerop i) input out))
     (for (values next-ip out) = (run-program-1
 				 (svref *amp-code* i)
-				 ip
-				 (if (zerop ip) (list (nth i phase-settings) in) (list in))))
+				 (if (zerop ip) (list (nth i phase-settings) in) (list in))
+				 ip))
     (setf (svref *amp-ips* i) next-ip)
     (finally (return (values next-ip out)))))
 

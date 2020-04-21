@@ -40,8 +40,11 @@
 (defun read-input (ip program read-fn &optional param-modes)
   (destructuring-bind (address) (get-params ip program 0 1 param-modes)
     (let ((input (funcall read-fn)))
-      (setf (svref program address) input)
-      (+ 2 ip))))
+      (if input
+	  (progn
+	    (setf (svref program address) input)
+	    (+ 2 ip))
+	  ip))))
 
 (defun write-to-output (ip program write-fn &optional param-modes)
   (let ((params (get-params ip program 1 1 param-modes)))
@@ -98,19 +101,27 @@
     (while ip)
     (finally (return result))))
 
-(defun run-program-1 (program start-ip inputs)
+(defun program-status (ip prev-ip result)
+  (cond
+    ((null ip) :halt)
+    ((not (null result)) :output)
+    ((eql prev-ip ip) :input)
+    (t :error)))
+
+(defun run-program-1 (program inputs &optional (start-ip 0))
   (iter
     (initially (setq ip start-ip))
     (with result)
-    (for ip next (do-step ip program (λ () (pop inputs)) (λ (x) (setq result x))))
-    (while (and ip (null result)))
-    (finally (return (values ip result inputs)))))
+    (for ip :next (do-step ip program (λ () (pop inputs)) (λ (x) (setq result x))))
+    (for prev-ip :previous ip :initially -1)
+    (while (and ip (null result) (/= ip prev-ip)))
+    (finally (return (values ip result (program-status ip prev-ip result) inputs)))))
 
 (defun run-program-collect-results (program program-inputs)
   (iter
     (with ip = 0)
     (with inputs = program-inputs)
-    (multiple-value-bind (next-ip result next-inputs) (run-program-1 program ip inputs)
+    (multiple-value-bind (next-ip result next-inputs) (run-program-1 program inputs ip)
       (while next-ip)
       (collect result)
       (setq ip next-ip)

@@ -1,7 +1,7 @@
 (defpackage :day-11
-  (:use :cl :advent-of-code :iterate :alexandria)
+  (:use :cl :advent-of-code :iterate :alexandria :zpng)
     (:import-from :day-5 :run-program-1 :allocate-program-memory)
-    (:export :solution-1))
+    (:export :solution-1 :solution-2))
 
 (in-package :day-11)
 
@@ -42,3 +42,38 @@
 	(panels (make-hash-table :test #'equal)))
     (run-robot input panels)
     (hash-table-count panels)))
+
+(defun solution-2 ()
+  (let ((input (allocate-program-memory (read-input)))
+	(panels (make-hash-table :test #'equal))
+	(file #p"/tmp/day-11.png"))
+    (setf (gethash (cons 0 0) panels) 1)
+    (run-robot input panels)
+    (draw-image file panels)
+    file))
+
+(defparameter *width* 100)
+(defparameter *height* 100)
+
+(defun get-pixel (x y panels)
+  (let ((px (- x 50))
+	(py (- y 50)))
+    (* 255 (gethash (cons px py) panels 0))))
+
+(defun draw-image (file panels)
+  (let ((png (make-instance 'pixel-streamed-png
+			    :color-type :grayscale
+			    :width *width*
+			    :height *height*)))
+    (with-open-file (stream file
+			    :direction :output
+			    :if-exists :supersede
+			    :if-does-not-exist :create
+			    :element-type '(unsigned-byte 8))
+      (start-png png stream)
+      (iter
+	(for y :below *height*)
+	(iter
+	  (for x :below *width*)
+	  (write-pixel (list (get-pixel x y panels)) png)))
+      (finish-png png))))

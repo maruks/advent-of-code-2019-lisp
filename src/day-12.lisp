@@ -64,10 +64,12 @@
     (move-moons moons (iota 3))))
 
 (defun energy (moons)
-  (iter
-    (for i :below *number-of-moons*)
-    (sum (* (reduce #'+ (map 'list #'abs (moon-velocity (svref moons i))))
-	    (reduce #'+ (map 'list #'abs (moon-position (svref moons i))))))))
+  (flet ((do-sum (moon-slot moon-idx)
+	   (reduce #'+ (map 'list #'abs (funcall moon-slot (svref moons moon-idx))))))
+    (iter
+      (for i :below *number-of-moons*)
+      (sum (* (do-sum #'moon-velocity i)
+	      (do-sum #'moon-position i))))))
 
 (defun solution-1 ()
   (let ((moons (moons-vector (read-input #p"day-12-input.txt"))))
@@ -77,7 +79,7 @@
 (defvar *initial-positions*)
 
 (defun positions (moons axis)
-  (mapcar (lambda (m) (svref (moon-position (svref moons m)) axis)) (iota *number-of-moons*)))
+  (mapcar (λ (m) (svref (moon-position (svref moons m)) axis)) (iota *number-of-moons*)))
 
 (defun number-of-steps (moons &optional (steps 0) (axis-list '(0 1 2)))
   (flet ((->velocity (axis moon) (svref (moon-velocity (svref moons moon)) axis)))

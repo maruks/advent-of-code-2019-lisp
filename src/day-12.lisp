@@ -36,7 +36,7 @@
 
 (defparameter *pairs-idxs* (pairs-indices))
 
-(defun move-moons (moons)
+(defun move-moons (moons axis-list)
   (flet ((->position (moon axis) (svref (moon-position (svref moons moon)) axis))
 	 (->velocity (moon axis) (svref (moon-velocity (svref moons moon)) axis))
 	 (change-velocity (moon axis delta) (incf (svref (moon-velocity (svref moons moon)) axis) delta))
@@ -44,7 +44,7 @@
     (iter
       (for idx :in *pairs-idxs*)
       (iter
-	(for axis :below 3)
+	(for axis :in axis-list)
 	(let* ((m-1 (car idx))
 	       (m-2 (cdr idx))
 	       (p-1 (->position m-1 axis))
@@ -55,13 +55,13 @@
     (iter
       (for m :below *number-of-moons*)
       (iter
-	(for axis :below 3)
+	(for axis :in axis-list)
 	(change-position m axis (->velocity m axis)))
       (finally (return moons)))))
 
 (defun run-simulation (moons steps)
   (dotimes (i steps moons)
-    (move-moons moons)))
+    (move-moons moons (iota 3))))
 
 (defun energy (moons)
   (iter
@@ -82,15 +82,16 @@
 (defun number-of-steps (moons &optional (steps 0) (axis-list '(0 1 2)))
   (flet ((->velocity (axis moon) (svref (moon-velocity (svref moons moon)) axis)))
     (if axis-list
-	(let* ((next-moons (move-moons moons))
-	       (found (iter
-			(for i :in axis-list)
-			(when (and (every #'zerop (mapcar (curry #'->velocity i) (iota *number-of-moons*)))
-				   (equal (positions moons i) (svref *initial-positions* i))
-				   (zerop (svref *cycles* i)))
-			  (setf (svref *cycles* i) (1+ steps))
-			  (collect i)))))
-	  (number-of-steps next-moons (1+ steps) (set-difference axis-list found)))
+	(progn
+	  (move-moons moons axis-list)
+	  (let* ((found (iter
+			  (for i :in axis-list)
+			  (when (and (every #'zerop (mapcar (curry #'->velocity i) (iota *number-of-moons*)))
+				     (equal (positions moons i) (svref *initial-positions* i))
+				     (zerop (svref *cycles* i)))
+			    (setf (svref *cycles* i) (1+ steps))
+			    (collect i)))))
+	    (number-of-steps moons (1+ steps) (set-difference axis-list found))))
 	(apply #'lcm (coerce *cycles* 'list)))))
 
 (defun solution-2 ()

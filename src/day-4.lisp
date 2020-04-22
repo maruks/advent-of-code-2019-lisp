@@ -16,8 +16,8 @@
       sum
       (count-numbers (1+ num) max-num (if (test-number num) (1+ sum) sum))))
 
-(defun solution-1 (from to)
-  (count-numbers from to 0))
+(defun solution-1 ()
+  (count-numbers 236491 713787 0))
 
 (defun test-number-2 (number &optional prev-digit (num-of-matches 0) has-double?)
   (if (plusp number)
@@ -34,5 +34,5 @@
       sum
       (count-numbers-2 (1+ num) max-num (if (test-number-2 num) (1+ sum) sum))))
 
-(defun solution-2 (from to)
-  (count-numbers-2 from to 0))
+(defun solution-2 ()
+  (count-numbers-2 236491 713787 0))

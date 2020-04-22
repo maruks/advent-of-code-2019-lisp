@@ -42,12 +42,12 @@
   (setf (svref code 2) arg2)
   (svref (run-intcode (copy-seq code)) 0))
 
-(defun solution-2 (target)
+(defun solution-2 ()
   (let* ((code (read-code #p"day-2-input.txt"))
 	 (size (length code))
 	 (args (iterate outer
 		 (for i from 0 below size)
 		 (iterate (for j from 0 below size)
-		   (when (eql target (try-input code i j))
+		   (when (eql 19690720 (try-input code i j))
 		     (return-from outer (cons i j)))))))
     (+ (* 100 (car args)) (cdr args))))

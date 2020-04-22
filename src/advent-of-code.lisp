@@ -1,5 +1,6 @@
 (defpackage :advent-of-code
-  (:use :cl :uiop/stream :split-sequence :iterate )
+  (:use :cl :uiop/stream :split-sequence :iterate)
+  (:import-from :ppcre :create-scanner)
   (:export read-file read-lines read-string read-code resource-file
 	   make-point point-x point-y distance compare-points λ))
 
@@ -36,3 +37,11 @@
 (defmacro λ (&whole whole args &body body)
   (declare (ignore args body))
   (cons 'lambda (cdr whole)))
+
+;; regex #r macro
+(defun regex-reader (stream char-1 char-2)
+  (declare (ignore char-1))
+  (declare (ignore char-2))
+  `(create-scanner ,(read stream t nil t)))
+
+(set-dispatch-macro-character #\# #\r #'regex-reader)

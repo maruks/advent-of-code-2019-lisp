@@ -16,30 +16,37 @@
 (defun read-input ()
   (read-lines #'identity (resource-file #p"day-10-input.txt")))
 
-(defun dist (point-1 point-2)
-  (sqrt (+ (expt (- (point-x point-1) (point-x point-2)) 2)
-	   (expt (- (point-y point-1) (point-y point-2)) 2))))
-
 (defun float-eq (a b)
   (< (abs (- a b)) 0.00001))
 
-(defun is-hidden (p0 p1 p2)
-  (or
-   (float-eq (+ (dist p0 p1) (dist p1 p2)) (dist p0 p2))
-   (float-eq (+ (dist p0 p2) (dist p2 p1)) (dist p0 p1))))
+(defun atan-degrees (x)
+  (float (* (/ 180 pi) (atan x))))
 
-(defun remove-hidden (p1 p2 points)
-  (remove-if (curry #'is-hidden p1 p2) points))
+(defun angle (dx dy)
+  (cond
+    ((zerop dx) (if (plusp dy) 90.0 -90.0))
+    ((plusp dx) (atan-degrees (float (/ dy dx))))
+    ((minusp dx) (- -180.0 (atan-degrees (- (float (/ dy dx))))) )))
 
-(defun find-hidden (p1 p2 points)
-  (remove-if-not (curry #'is-hidden p1 p2) points))
+(defun angle-between-points (point-1 point-2)
+  (let ((dx (- (point-x point-2) (point-x point-1)))
+	(dy (- (point-y point-1) (point-y point-2))))
+    (angle dx dy)))
 
-(defun visible-points (point-a points &optional result)
-  (if result
-      (if-let (point-b (car points))
-	(visible-points point-a (remove-hidden point-a point-b points) (1+ result))
-	result)
-      (visible-points point-a (remove point-a points :test #'equalp) 0)))
+(defun all-angles (from points)
+  (let* ((angles (mapcar (curry #'angle-between-points from) points)))
+    (sort angles #'<)))
+
+(defun unique-angles (angles prev-angle unique)
+  (if-let (angle (car angles))
+    (if (float-eq angle prev-angle)
+	(unique-angles (cdr angles) prev-angle unique)
+	(unique-angles (cdr angles) angle (1+ unique)))
+    unique))
+
+(defun visible-points (from points)
+  (let ((angles (all-angles from (remove from points :test #'equalp))))
+    (unique-angles (cdr angles) (car angles) 1)))
 
 (defun best-location-point (points)
   (iter
@@ -54,33 +61,24 @@
   (let ((map (read-map (read-input))))
     (max-visible-points map)))
 
-(defun atan-degrees (x)
-  (float (* (/ 180 pi) (atan x))))
+(defun dist (point-1 point-2)
+  (sqrt (+ (expt (- (point-x point-1) (point-x point-2)) 2)
+	   (expt (- (point-y point-1) (point-y point-2)) 2))))
 
-(defun angle (dx dy)
-  (cond
-    ((zerop dx) (if (plusp dy) 90.0 -90.0))
-    ((plusp dx) (atan-degrees (float (/ dy dx))))
-    ((minusp dx) (- -180.0 (atan-degrees (- (float (/ dy dx))))) )))
+(defun all-angles-with-points (from points)
+  (let ((angles (mapcar (lambda (p) (cons (angle-between-points from p) p)) points)))
+    (sort angles (lambda (p1 p2) (> (car p1) (car p2))))))
 
-(defun find-next-point (from points &optional (prev-angle 90.0))
-  (let ((x (point-x from))
-	(y (point-y from)))
-    (iter
-      (for p :in points)
-      (for angle = (angle (- (point-x p) x) (- y (point-y p) )))
-      (finding (list p angle) minimizing (- prev-angle angle)))))
-
-(defun collect-points (from points &optional (angle 90.0) result)
+(defun collect-points (from angles prev-angle &optional points result)
   (flet ((sort-by-distance (p1 p2) (< (dist from p1) (dist from p2))))
-    (if points
-	(destructuring-bind (point next-angle) (find-next-point from points angle)
-	  (collect-points
-	   from
-	   (remove-hidden from point points)
-	   next-angle
-	   (cons (sort (find-hidden from point points) #'sort-by-distance) result)))
-	(make-array (list (length result)) :initial-contents (nreverse result)))))
+    (if-let (angle-point (car angles))
+      (let ((angle (car angle-point))
+	    (point (cdr angle-point)))
+	(if (float-eq angle prev-angle)
+	    (collect-points from (cdr angles) prev-angle (cons point points) result)
+	    (collect-points from (cdr angles) angle (list point) (cons (sort points #'sort-by-distance) result))))
+      (let ((final-result (if points (cons (sort points #'sort-by-distance) result) result)))
+	(make-array (list (length final-result)) :initial-contents (nreverse final-result))))))
 
 (defun vaporized (points vec-size nth &optional (index 0) prev-point)
   (if (zerop nth)
@@ -91,7 +89,8 @@
 
 (defun vaporized-point (points nth)
   (let* ((station-point (cadr (best-location-point points)))
-	 (pts (collect-points station-point (remove station-point points :test #'equalp))))
+	 (angles (all-angles-with-points station-point (remove station-point points :test #'equalp)))
+	 (pts (collect-points station-point angles (caar angles))))
     (vaporized pts (length pts) nth)))
 
 (defun solution-2 ()

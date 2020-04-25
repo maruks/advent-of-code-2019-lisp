@@ -28,6 +28,7 @@
   (day 11 "Space Police")
   (day 12 "The N-Body Problem")
   (day 13 "Care Package")
+  (day 14 "Space Stoichiometry")
   )
 
 (defun main ()

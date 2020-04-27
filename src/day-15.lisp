@@ -39,8 +39,8 @@
   (when-let (droid (qpop queue))
     (let* ((location (droid-location droid))
 	   (directions (iota 4 :start 1))
-	   (unvisited (remove-if (lambda (d) (gethash (move-location location d) visited)) directions))
-	   (moved (remove-if #'null (mapcar (curry #'move-droid droid) unvisited)))
+	   (unvisited (delete-if (lambda (d) (gethash (move-location location d) visited)) directions))
+	   (moved (delete-if #'null (mapcar (curry #'move-droid droid) unvisited)))
 	   (found-distance (find-if #'consp moved)))
       (or found-distance
 	  (progn
@@ -98,7 +98,7 @@
 	 (unvisited (delete-if (λ (d) (gethash (move-location location d) visited)) directions))
 	 (moved (mapcar (curry #'move-droid-2 droid) unvisited))
 	 (walls (remove-if-not #'consp moved))
-	 (droids (remove-if #'consp moved)))
+	 (droids (delete-if #'consp moved)))
     (iter
       (for w in walls)
       (setf (gethash w map) :wall))

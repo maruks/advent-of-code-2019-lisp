@@ -95,7 +95,7 @@
 (defun explore-map (droid visited map)
   (let* ((location (droid-location droid))
 	 (directions (iota 4 :start 1))
-	 (unvisited (remove-if (lambda (d) (gethash (move-location location d) visited)) directions))
+	 (unvisited (delete-if (λ (d) (gethash (move-location location d) visited)) directions))
 	 (moved (mapcar (curry #'move-droid-2 droid) unvisited))
 	 (walls (remove-if-not #'consp moved))
 	 (droids (remove-if #'consp moved)))
@@ -115,7 +115,7 @@
 
 (defun fill-with-oxygen (from map &optional (time 0))
   (if from
-      (let ((filled (remove-if-not (λ (p) (eq :empty (gethash p map))) (remove-duplicates (mappend #'adjacent from) :test #'equal))))
+      (let ((filled (delete-if-not (λ (p) (eq :empty (gethash p map))) (delete-duplicates (mappend #'adjacent from) :test #'equal))))
 	(iter
 	  (for f in from)
 	  (setf (gethash f map) :oxygen))

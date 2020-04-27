@@ -7,7 +7,7 @@
 (defparameter *number* #r"\\d+")
 (defparameter *chemical* #r"[A-Z]+")
 
-(defstruct (reaction) inputs output amount)
+(defstruct reaction inputs output amount)
 
 (defparameter *fuel* 'FUEL)
 (defparameter *ore* 'ORE)

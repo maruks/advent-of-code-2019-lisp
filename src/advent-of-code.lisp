@@ -1,12 +1,16 @@
 (defpackage :advent-of-code
   (:use :cl :uiop/stream :split-sequence :iterate)
   (:import-from :ppcre :create-scanner)
-  (:export read-file read-lines read-string read-code resource-file
-	   make-point point-x point-y distance compare-points λ))
+  (:export read-file read-lines read-string read-code resource-file sort-by-distance-fn
+	   make-point point-x point-y manhattan-distance distance compare-points λ))
 
 (in-package :advent-of-code)
 
 (defparameter *resources* (asdf/system:system-relative-pathname :advent-of-code-2019 "resources/"))
+
+(defmacro λ (&whole whole args &body body)
+  (declare (ignore args body))
+  (cons 'lambda (cdr whole)))
 
 (defun resource-file (p)
   (merge-pathnames p *resources*))
@@ -26,17 +30,21 @@
   (let* ((input (read-string #'parse-integer file)))
     (apply #'vector input)))
 
-(defstruct (point) x y)
+(defstruct point x y)
+
+(defun manhattan-distance (point-1 point-2)
+  (+ (abs (- (point-x point-1) (point-x point-2))) (abs (- (point-y point-1) (point-y point-2)))))
 
 (defun distance (point-1 point-2)
-  (+  (abs (- (point-x point-1) (point-x point-2))) (abs (- (point-y point-1) (point-y point-2)))))
+  (sqrt (+ (expt (- (point-x point-1) (point-x point-2)) 2)
+	   (expt (- (point-y point-1) (point-y point-2)) 2))))
+
+(defun sort-by-distance-fn (from)
+  (λ (p1 p2)
+    (< (distance from p1) (distance from p2))))
 
 (defun compare-points (point-1 point-2)
   (or (< (point-x point-1) (point-x point-2)) (< (point-y point-1) (point-y point-2))))
-
-(defmacro λ (&whole whole args &body body)
-  (declare (ignore args body))
-  (cons 'lambda (cdr whole)))
 
 ;; regex #r macro
 (defun regex-reader (stream char-1 char-2)

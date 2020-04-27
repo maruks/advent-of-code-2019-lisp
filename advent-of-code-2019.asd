@@ -6,7 +6,7 @@
   :license "Public license"
   :version "0.0.1"
   :serial t
-  :depends-on (:iterate :split-sequence :alexandria :cl-ppcre :zpng)
+  :depends-on (:iterate :split-sequence :alexandria :cl-ppcre :zpng :queues.priority-queue)
   :build-operation "program-op"
   :build-pathname "advent-of-code"
   :entry-point "main:main"
@@ -27,6 +27,7 @@
 			     (:file "day-12")
 			     (:file "day-13")
 			     (:file "day-14")
+			     (:file "day-15")
 			     (:file "main")
 			     )))
   :in-order-to ((test-op (test-op "advent-of-code-2019/tests"))))
@@ -53,5 +54,6 @@
 			     (:file "day-12-tests")
 			     (:file "day-13-tests")
 			     (:file "day-14-tests")
+			     (:file "day-15-tests")
 			     )))
   :perform (test-op (o c) (symbol-call 'cacau 'run :colorful t :reporter :list)))

@@ -61,17 +61,12 @@
   (let ((map (read-map (read-input))))
     (max-visible-points map)))
 
-(defun dist (point-1 point-2)
-  (sqrt (+ (expt (- (point-x point-1) (point-x point-2)) 2)
-	   (expt (- (point-y point-1) (point-y point-2)) 2))))
-
 (defun all-angles-with-points (from points)
   (let ((angles (mapcar (lambda (p) (cons (angle-between-points from p) p)) points)))
     (sort angles (lambda (p1 p2) (> (car p1) (car p2))))))
 
 (defun collect-points (from angles prev-angle &optional points result)
-  (labels ((sort-by-distance (p1 p2) (< (dist from p1) (dist from p2)))
-	   (cons-sorted-points () (cons (sort points #'sort-by-distance) result)))
+  (flet ((cons-sorted-points () (cons (sort points (sort-by-distance-fn from)) result)))
     (if-let (angle-point (car angles))
 	(let ((angle (car angle-point))
 	      (point (cdr angle-point)))

@@ -15,7 +15,7 @@
 (defparameter *adjust-base* 9)
 (defparameter *halt* 99)
 
-(defparameter *program-memory-size* 3000)
+(defparameter *program-memory-size* 4000)
 
 (defun get-params (ip program number-of-read-params number-of-params &optional param-modes)
   (when (plusp number-of-params)

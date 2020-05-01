@@ -121,7 +121,8 @@
   (iter
     (with ip = 0)
     (with inputs = program-inputs)
-    (multiple-value-bind (next-ip result next-inputs) (run-program-1 program inputs ip)
+    (multiple-value-bind (next-ip result status next-inputs) (run-program-1 program inputs ip)
+      (declare (ignore status))
       (while next-ip)
       (collect result)
       (setq ip next-ip)

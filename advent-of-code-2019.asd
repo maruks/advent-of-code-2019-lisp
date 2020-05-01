@@ -6,7 +6,7 @@
   :license "Public license"
   :version "0.0.1"
   :serial t
-  :depends-on (:iterate :split-sequence :alexandria :cl-ppcre :zpng :queues.priority-queue)
+  :depends-on (:iterate :split-sequence :alexandria :cl-ppcre :zpng :str :queues.priority-queue)
   :build-operation "program-op"
   :build-pathname "advent-of-code"
   :entry-point "main:main"

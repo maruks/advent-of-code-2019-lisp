@@ -35,7 +35,7 @@
      (- produced required-amount))))
 
 (defun read-input ()
-  (read-lines #'identity (resource-file #p"day-14-input.txt")))
+  (read-lines (resource-file #p"day-14-input.txt")))
 
 (defun add-chemical (chemical amount chemicals)
   (setf (gethash chemical chemicals) (+ amount (gethash chemical chemicals 0))))

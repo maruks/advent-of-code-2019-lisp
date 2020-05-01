@@ -6,7 +6,7 @@
 
 (defun read-input ()
   (mapcar (lambda (d) (- (char-code d) 48))
-	  (car (read-lines (rcurry #'coerce 'list) (resource-file #p"day-16-input.txt")))))
+	  (car (read-lines (resource-file #p"day-16-input.txt") (rcurry #'coerce 'list)))))
 
 (defparameter *base-pattern* '(0 1 0 -1))
 

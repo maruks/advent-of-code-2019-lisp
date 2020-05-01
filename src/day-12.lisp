@@ -11,7 +11,7 @@
 
 (defun read-input (file)
   (flet ((parse-line (s) (mapcar #'parse-integer (all-matches-as-strings *regex* s))))
-    (read-lines #'parse-line (resource-file file))))
+    (read-lines (resource-file file) #'parse-line)))
 
 (defstruct moon position velocity)
 

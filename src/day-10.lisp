@@ -14,7 +14,7 @@
 	(in outer (collect (make-point :x x :y y)))))))
 
 (defun read-input ()
-  (read-lines #'identity (resource-file #p"day-10-input.txt")))
+  (read-lines (resource-file #p"day-10-input.txt")))
 
 (defun float-eq (a b)
   (< (abs (- a b)) 0.00001))

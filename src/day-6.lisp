@@ -7,7 +7,7 @@
 (defun read-input (file)
   (flet ((readln (str)
 	   (mapcar #'make-keyword (split-sequence #\) str))))
-    (let* ((input (read-lines #'readln file))
+    (let* ((input (read-lines file #'readln))
 	   (size (length input))
 	   (result (make-hash-table :test #'eq :size size)))
       (iter

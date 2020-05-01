@@ -30,6 +30,7 @@
 			     (:file "day-15")
 			     (:file "day-16")
 			     (:file "day-17")
+			     (:file "day-18")
 			     (:file "main")
 			     )))
   :in-order-to ((test-op (test-op "advent-of-code-2019/tests"))))

@@ -8,7 +8,7 @@
   (- (truncate n 3) 2))
 
 (defun solution-1 ()
-  (let* ((input (read-lines #'parse-integer #p"day-1-input.txt")))
+  (let* ((input (read-lines #p"day-1-input.txt" #'parse-integer)))
     (reduce #'+ (mapcar #'fuel input) :initial-value 0)))
 
 (defun fuel-2 (n)
@@ -19,5 +19,5 @@
     (sum i)))
 
 (defun solution-2 ()
-  (let* ((input (read-lines #'parse-integer #p"day-1-input.txt")))
+  (let* ((input (read-lines #p"day-1-input.txt" #'parse-integer)))
     (reduce #'+ (mapcar #'fuel-2 input) :initial-value 0)))

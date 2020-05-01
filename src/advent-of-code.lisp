@@ -18,7 +18,7 @@
 (defun read-file (file)
   (read-file-lines (resource-file file)))
 
-(defun read-lines (parse-fn file)
+(defun read-lines (file &optional (parse-fn #'identity))
   (mapcar parse-fn
 	  (read-file-lines (resource-file file))))
 

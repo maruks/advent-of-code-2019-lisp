@@ -108,11 +108,6 @@
       (setf (gethash (droid-location m) visited) t)
       (explore-map m visited map))))
 
-(defun adjacent (point)
-  (let ((x (car point))
-	(y (cdr point)))
-    (list (cons (1+ x) y) (cons (1- x) y) (cons x (1+ y)) (cons x (1- y)))))
-
 (defun fill-with-oxygen (from map &optional (time 0))
   (if from
       (let ((filled (delete-if-not (λ (p) (eq :empty (gethash p map))) (delete-duplicates (mappend #'adjacent from) :test #'equal))))

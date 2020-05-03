@@ -26,11 +26,6 @@
       (format t "~a" (gethash (cons x (- 50 y) ) map #\Space)))
     (format t "~%")))
 
-(defun adjacent (point)
-  (let ((x (car point))
-	(y (cdr point)))
-    (list (cons (1+ x) y) (cons (1- x) y) (cons x (1+ y)) (cons x (1- y)))))
-
 (defun locate-intersections (map)
   (iter
     (for (k v) :in-hashtable map)

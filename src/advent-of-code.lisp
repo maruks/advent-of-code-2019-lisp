@@ -2,7 +2,7 @@
   (:use :cl :uiop/stream :split-sequence :iterate)
   (:import-from :ppcre :create-scanner)
   (:export read-file read-lines read-string read-code resource-file sort-by-distance-fn
-	   make-point point-x point-y manhattan-distance distance compare-points λ))
+	   make-point point-x point-y manhattan-distance distance compare-points adjacent λ))
 
 (in-package :advent-of-code)
 
@@ -38,6 +38,11 @@
 (defun distance (point-1 point-2)
   (sqrt (+ (expt (- (point-x point-1) (point-x point-2)) 2)
 	   (expt (- (point-y point-1) (point-y point-2)) 2))))
+
+(defun adjacent (point)
+  (let ((x (car point))
+	(y (cdr point)))
+    (list (cons (1+ x) y) (cons (1- x) y) (cons x (1+ y)) (cons x (1- y)))))
 
 (defun sort-by-distance-fn (from)
   (λ (p1 p2)

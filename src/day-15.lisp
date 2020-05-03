@@ -51,11 +51,8 @@
 	    (setf (gethash location visited) t)
 	    (search-oxygen queue visited))))))
 
-(defun compare-droids (d1 d2)
-  (< (droid-distance d1) (droid-distance d2)))
-
 (defun shortest-path (program)
-  (let ((queue (make-queue :priority-queue :compare #'compare-droids))
+  (let ((queue (make-queue :simple-queue))
 	(visited (make-hash-table :test #'equalp)))
     (qpush queue (make-droid :program program :ip 0 :distance 0 :location (make-point :x 0 :y 0)))
     (search-oxygen queue visited)))

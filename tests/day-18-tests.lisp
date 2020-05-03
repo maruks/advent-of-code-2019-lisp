@@ -68,5 +68,5 @@
   (eql-p 136 (shortest-distance *example-4*))
   (eql-p 81 (shortest-distance *example-5*)))
 
-(deftest "solution-1 test" ()
-  (eql-p 2796 (solution-1)))
+;; (deftest "solution-1 test" ()
+;;   (eql-p 2796 (solution-1)))

@@ -6,7 +6,7 @@
   :license "Public license"
   :version "0.0.1"
   :serial t
-  :depends-on (:iterate :split-sequence :alexandria :cl-ppcre :zpng :str :queues.priority-queue)
+  :depends-on (:iterate :split-sequence :alexandria :cl-ppcre :zpng :str :queues.simple-queue :queues.priority-queue)
   :build-operation "program-op"
   :build-pathname "advent-of-code"
   :entry-point "main:main"
@@ -60,5 +60,6 @@
 			     (:file "day-15-tests")
 			     (:file "day-16-tests")
 			     (:file "day-17-tests")
+			     (:file "day-18-tests")
 			     )))
   :perform (test-op (o c) (symbol-call 'cacau 'run :colorful t :reporter :list)))

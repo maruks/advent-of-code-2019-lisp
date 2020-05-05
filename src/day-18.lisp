@@ -52,15 +52,17 @@
     (when (and (characterp key) (lower-case-p key))
       key)))
 
-(defun found-new-key? (map location keys)
-  (let ((key (gethash location map)))
-    (and (characterp key) (lower-case-p key) (null (gethash key keys)))))
-
 (defun location-hash-key (location keys)
   (logior (ash (car location) 33) (ash (cdr location) 26) keys))
 
 (defun is-visited? (visited location keys)
   (gethash (location-hash-key location keys) visited))
+
+(defun add-to-visited (sl visited)
+  (let* ((location (search-location-location sl))
+	 (keys (search-location-keys sl))
+	 (hash-key (location-hash-key location keys)))
+    (setf (gethash hash-key visited) t)))
 
 (defstruct search-location location distance keys)
 
@@ -79,12 +81,6 @@
 			    (add-key keys k)
 			    keys)))
 	    locations)))
-
-(defun add-to-visited (sl visited)
-  (let* ((location (search-location-location sl))
-	 (keys (search-location-keys sl))
-	 (hash-key (location-hash-key location keys)))
-    (setf (gethash hash-key visited) t)))
 
 (defun search-keys (queue map all-keys-number visited)
   (when-let (sl (qpop queue))

@@ -153,3 +153,14 @@
   (shortest-distance (read-input)))
 
 (defun solution-2 ())
+
+
+(defparameter *example-1*
+  '(
+"##########"
+"#.a###.Ab#"
+"#.B..@.###"
+"#...######"
+"##########"
+
+    ))

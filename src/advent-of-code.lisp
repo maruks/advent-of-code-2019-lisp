@@ -1,8 +1,9 @@
 (defpackage :advent-of-code
   (:use :cl :uiop/stream :split-sequence :iterate)
   (:import-from :ppcre :create-scanner)
-  (:export read-file read-lines read-string read-code resource-file sort-by-distance-fn
-	   make-point point-x point-y manhattan-distance distance compare-points adjacent λ))
+  (:import-from :alexandria :with-gensyms :if-let)
+  (:export read-file read-lines read-string read-code resource-file sort-by-distance-fn print-hash
+	   make-point point-x point-y manhattan-distance distance compare-points adjacent memoize-function λ))
 
 (in-package :advent-of-code)
 
@@ -51,6 +52,11 @@
 (defun compare-points (point-1 point-2)
   (or (< (point-x point-1) (point-x point-2)) (< (point-y point-1) (point-y point-2))))
 
+(defun print-hash (map)
+  (iter
+    (for (k v) in-hashtable map)
+    (format t "~a -> ~a ~%" k v)))
+
 ;; regex #r macro
 (defun regex-reader (stream char-1 char-2)
   (declare (ignore char-1))
@@ -58,3 +64,11 @@
   `(create-scanner ,(read stream t nil t)))
 
 (set-dispatch-macro-character #\# #\r #'regex-reader)
+
+(defmacro memoize-function (table-name hash-fn &body body)
+  (with-gensyms (hash-key cached-result)
+    `(let ((,hash-key ,hash-fn))
+       (if-let (,cached-result (gethash ,hash-key ,table-name))
+	 ,cached-result
+	 (setf (gethash ,hash-key ,table-name)
+	       (progn ,@body))))))

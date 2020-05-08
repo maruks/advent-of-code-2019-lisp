@@ -18,7 +18,7 @@
 (defun move-droid (droid direction)
   (let ((program (copy-array (droid-program droid)))
 	(next-distance (1+ (droid-distance droid)))
-	(next-location (move-location (droid-location droid) direction)))
+	(next-location (-> droid (droid-location) (move-location direction))))
     (multiple-value-bind (out next-ip) (do-step program (droid-ip droid) direction)
       (ecase out
 	(0 nil)
@@ -38,9 +38,10 @@
 (defun search-oxygen (queue visited)
   (when-let (droid (qpop queue))
     (let* ((location (droid-location droid))
-	   (directions (iota 4 :start 1))
-	   (unvisited (delete-if (lambda (d) (gethash (move-location location d) visited)) directions))
-	   (moved (delete-if #'null (mapcar (curry #'move-droid droid) unvisited)))
+	   (moved (->> (iota 4 :start 1)
+		    (delete-if (lambda (d) (gethash (move-location location d) visited)))
+		    (mapcar (curry #'move-droid droid))
+		    (delete-if #'null )))
 	   (found-distance (find-if #'consp moved)))
       (or found-distance
 	  (progn
@@ -91,9 +92,9 @@
 
 (defun explore-map (droid visited map)
   (let* ((location (droid-location droid))
-	 (directions (iota 4 :start 1))
-	 (unvisited (delete-if (λ (d) (gethash (move-location location d) visited)) directions))
-	 (moved (mapcar (curry #'move-droid-2 droid) unvisited))
+	 (moved (->> (iota 4 :start 1)
+		  (delete-if (λ (d) (gethash (move-location location d) visited)))
+		  (mapcar (curry #'move-droid-2 droid))))
 	 (walls (remove-if-not #'consp moved))
 	 (droids (delete-if #'consp moved)))
     (iter
@@ -107,7 +108,9 @@
 
 (defun fill-with-oxygen (from map &optional (time 0))
   (if from
-      (let ((filled (delete-if-not (λ (p) (eq :empty (gethash p map))) (delete-duplicates (mappend #'adjacent from) :test #'equal))))
+      (let ((filled (delete-if-not
+		     (λ (p) (eq :empty (gethash p map)))
+		     (delete-duplicates (mappend #'adjacent from) :test #'equal))))
 	(iter
 	  (for f in from)
 	  (setf (gethash f map) :oxygen))

@@ -1,6 +1,6 @@
 (defpackage :day-18
   (:use :cl :advent-of-code :iterate :alexandria :queues)
-  (:export :solution-1 :solution-2 :shortest-distance))
+  (:export :solution-1 :solution-2 :shortest-distance :shortest-distance-2))
 
 (in-package :day-18)
 
@@ -93,17 +93,15 @@
 (defvar *shortest-path-cache*)
 
 (defun shortest-path (from graph keys all-keys-number)
-  (memoize-function *search-keys-cache* (logior (ash (char-code from) 26) keys)
-    	    (if
-	     (eq keys all-keys-number)
-	     0
-	     (let ((reachable-keys (search-keys graph from keys)))
-	       (reduce #'min (mapcar (λ (kd)
-				       (destructuring-bind (k . d) kd
-					 (+ d
-					    (shortest-path k graph (add-key keys k) all-keys-number))))
-				     reachable-keys)
-		       :initial-value 10000)))))
+  (memoize-function *shortest-path-cache* (logior (ash (char-code from) 26) keys)
+    	    (if (eq keys all-keys-number)
+		0
+		(let ((reachable-keys (search-keys graph from keys)))
+		  (reduce #'min (mapcar (λ (kd)
+					  (destructuring-bind (k . d) kd
+					    (+ d (shortest-path k graph (add-key keys k) all-keys-number))))
+					reachable-keys)
+			  :initial-value 10000)))))
 
 (defun add-to-results (kd results)
   (destructuring-bind (k . d) kd
@@ -152,15 +150,57 @@
 (defun solution-1 ()
   (shortest-distance (read-input)))
 
-(defun solution-2 ())
+;; -------------------------------------------- PART 2 --------------------------------------------
 
+(defun robot-locations (location)
+  (destructuring-bind (x . y) location
+    (list
+     (cons (1+ x) (1+ y))
+     (cons (1- x) (1- y))
+     (cons (1+ x) (1- y))
+     (cons (1- x) (1+ y)))))
 
-(defparameter *example-1*
-  '(
-"##########"
-"#.a###.Ab#"
-"#.B..@.###"
-"#...######"
-"##########"
+(defun modify-map (map start-location robot-locations)
+  (iter
+    (for p :in (cons start-location (adjacent start-location)))
+    (setf (gethash p map) #\#))
+  (iter
+    (with robots = '(#\1 #\2 #\3 #\4))
+    (for (k . v) :in (pairlis robots robot-locations))
+    (setf (gethash v map) k)
+    (finally (return robots))))
 
-    ))
+(defun shortest-distance-2 (input)
+  (let ((*shortest-path-cache* (make-hash-table))
+	(*search-keys-cache* (make-hash-table)))
+    (multiple-value-bind (map start-location locations) (read-map input)
+      (let* ((robot-locations (robot-locations start-location))
+	     (robots (modify-map map start-location robot-locations))
+	     (graph (build-graph map (append robot-locations locations))))
+	(shortest-path-2 robots graph 0 (all-keys-number (all-keys graph)))))))
+
+(defun shortest-path-2-args-hash (from keys)
+  (assert (eq 4 (length from)))
+  (let ((sources (mapcar #'cons from (cons 26 (repeat 8 3)))))
+    (reduce (λ (res ro)
+	      (destructuring-bind (src . offset) ro
+		(logior (ash res offset) (char-code src))))
+	    sources
+	    :initial-value keys)))
+
+(defun shortest-path-2 (from-sources graph keys all-keys-number)
+  (memoize-function *shortest-path-cache* (shortest-path-2-args-hash from-sources keys)
+    (if (eq keys all-keys-number)
+	0
+	(let* ((reachable-keys (mapcar (λ (s) (search-keys graph s keys)) from-sources))
+	       (results (mappend (λ (ks src)
+				   (mapcar
+				    (λ (kd)
+				      (destructuring-bind (k . d) kd
+					(+ d (shortest-path-2 (substitute k src from-sources) graph (add-key keys k) all-keys-number))))
+				    ks))
+				 reachable-keys from-sources)))
+	  (reduce #'min results :initial-value 10000)))))
+
+(defun solution-2 ()
+  (shortest-distance-2 (read-input)))

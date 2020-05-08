@@ -2,8 +2,8 @@
   (:use :cl :uiop/stream :split-sequence :iterate)
   (:import-from :ppcre :create-scanner)
   (:import-from :alexandria :with-gensyms :if-let)
-  (:export read-file read-lines read-string read-code resource-file sort-by-distance-fn print-hash
-	   make-point point-x point-y manhattan-distance distance compare-points adjacent memoize-function λ))
+  (:export read-file read-lines read-string read-code resource-file sort-by-distance-fn print-hash repeat
+	   make-point point-x point-y manhattan-distance distance compare-points adjacent memoize-function λ -> ->>))
 
 (in-package :advent-of-code)
 
@@ -57,6 +57,11 @@
     (for (k v) in-hashtable map)
     (format t "~a -> ~a ~%" k v)))
 
+(defun repeat (value n)
+  (iter
+    (for i :below n)
+    (collect value)))
+
 ;; regex #r macro
 (defun regex-reader (stream char-1 char-2)
   (declare (ignore char-1))
@@ -66,9 +71,25 @@
 (set-dispatch-macro-character #\# #\r #'regex-reader)
 
 (defmacro memoize-function (table-name hash-fn &body body)
-  (with-gensyms (hash-key cached-result)
+  (with-gensyms (hash-key cached-value hit)
     `(let ((,hash-key ,hash-fn))
-       (if-let (,cached-result (gethash ,hash-key ,table-name))
-	 ,cached-result
-	 (setf (gethash ,hash-key ,table-name)
-	       (progn ,@body))))))
+       (multiple-value-bind (,cached-value ,hit) (gethash ,hash-key ,table-name)
+	 (if ,hit
+	     ,cached-value
+	     (setf (gethash ,hash-key ,table-name)
+		   (progn ,@body)))))))
+
+(defmacro -> (value &body body)
+  (reduce (λ (result form)
+	    (if (consp form)
+		(destructuring-bind (first &rest rest) form
+		  (cons first (cons result rest)))
+		(list form result)))
+	  body :initial-value value))
+
+(defmacro ->> (value &body body)
+  (reduce (λ (result form)
+	    (if (consp form)
+		(append form (list result))
+		(list form result)))
+	  body :initial-value value))

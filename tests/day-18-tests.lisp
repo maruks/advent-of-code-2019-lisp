@@ -51,9 +51,9 @@
 (defparameter *example-7*
   '("#############"
     "#DcBa.#.GhKl#"
-    "#.###@#@#I###"
-    "#e#d#####j#k#"
-    "###C#@#@###J#"
+    "#.###...#I###"
+    "#e#d#.@.#j#k#"
+    "###C#...###J#"
     "#fEbA.#.FgHi#"
     "#############"))
 
@@ -61,9 +61,9 @@
   '("#############"
     "#g#f.D#..h#l#"
     "#F###e#E###.#"
-    "#dCba@#@BcIJ#"
-    "#############"
-    "#nK.L@#@G...#"
+    "#dCba...BcIJ#"
+    "#####.@.#####"
+    "#nK.L...G...#"
     "#M###N#H###.#"
     "#o#m..#i#jk.#"
     "#############"))
@@ -76,5 +76,12 @@
   (eql-p 81 (shortest-distance *example-5*))
   (eql-p 20 (shortest-distance *example-6*)))
 
+(deftest "shortest-distance-2 test" ()
+  (eql-p 32 (shortest-distance-2 *example-7*))
+  (eql-p 72 (shortest-distance-2 *example-8*)))
+
 (deftest "solution-1 test" ()
   (eql-p 2796 (solution-1)))
+
+(deftest "solution-2 test" ()
+  (eql-p 1642 (solution-2)))

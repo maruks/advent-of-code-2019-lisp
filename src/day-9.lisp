@@ -10,8 +10,8 @@
 
 (defun solution-1 ()
   (let* ((input (read-input)))
-    (run-program-collect-results (allocate-program-memory input) '(1))))
+    (run-program-collect-results (allocate-program-memory input 1200) '(1))))
 
 (defun solution-2 ()
   (let* ((input (read-input)))
-    (run-program-collect-results (allocate-program-memory input) '(2))))
+    (run-program-collect-results (allocate-program-memory input 1200) '(2))))

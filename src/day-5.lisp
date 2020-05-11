@@ -15,8 +15,6 @@
 (defconstant +adjust-base+ 9)
 (defconstant +halt+ 99)
 
-(defparameter *program-memory-size* 4000)
-
 (defun get-params (ip program number-of-read-params number-of-params &optional param-modes)
   (when (plusp number-of-params)
     (let* ((param-mode (car param-modes))
@@ -24,7 +22,7 @@
 	   (offset (case param-mode
                      (0 param)
 		     (1 -1)
-		     (2 (+ (svref program (1- *program-memory-size*)) param))))
+		     (2 (+ (svref program (1- (length program))) param))))
 	   (value (cond
 		    ((eql param-mode 1) param)
 		    ((plusp number-of-read-params) (svref program offset))
@@ -74,7 +72,7 @@
 
 (defun adjust-base (ip program &optional param-modes)
   (destructuring-bind (val) (get-params ip program 1 1 param-modes)
-    (let ((base-pointer (1- *program-memory-size*)))
+    (let ((base-pointer (1- (length program))))
       (incf (svref program base-pointer) val)
       (+ 2 ip))))
 
@@ -134,8 +132,8 @@
 (defun solution-2 ()
   (run-program (read-code #p"day-5-input.txt") '(5)))
 
-(defun allocate-program-memory (program)
-  (let ((result (make-array (list *program-memory-size*) :initial-element 0)))
+(defun allocate-program-memory (program &optional (program-memory-size 4000))
+  (let ((result (make-array (list program-memory-size) :initial-element 0)))
     (iter
       (for i :below (length program))
       (setf (svref result i) (svref program i))

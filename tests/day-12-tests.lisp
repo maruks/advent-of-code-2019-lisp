@@ -3,8 +3,10 @@
 
 (in-package :day-12-tests)
 
-(deftest "solution-1 test" ()
-  (eql-p 13045 (solution-1)))
+(defsuite :day-12 ()
 
-(deftest "solution-2 test" ()
-  (eql-p 344724687853944 (solution-2)))
+  (deftest "solution-1 test" ()
+    (eql-p 13045 (solution-1)))
+
+  (deftest "solution-2 test" ()
+    (eql-p 344724687853944 (solution-2))))

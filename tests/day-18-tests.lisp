@@ -68,20 +68,22 @@
     "#o#m..#i#jk.#"
     "#############"))
 
-(deftest "shortest-distance test" ()
-  (eql-p 8 (shortest-distance *example-1*))
-  (eql-p 86 (shortest-distance *example-2*))
-  (eql-p 132 (shortest-distance *example-3*))
-  (eql-p 136 (shortest-distance *example-4*))
-  (eql-p 81 (shortest-distance *example-5*))
-  (eql-p 20 (shortest-distance *example-6*)))
+(defsuite :day-18 ()
 
-(deftest "shortest-distance-2 test" ()
-  (eql-p 32 (shortest-distance-2 *example-7*))
-  (eql-p 72 (shortest-distance-2 *example-8*)))
+  (deftest "shortest-distance test" ()
+    (eql-p 8 (shortest-distance *example-1*))
+    (eql-p 86 (shortest-distance *example-2*))
+    (eql-p 132 (shortest-distance *example-3*))
+    (eql-p 136 (shortest-distance *example-4*))
+    (eql-p 81 (shortest-distance *example-5*))
+    (eql-p 20 (shortest-distance *example-6*)))
 
-(deftest "solution-1 test" ()
-  (eql-p 2796 (solution-1)))
+  (deftest "shortest-distance-2 test" ()
+    (eql-p 32 (shortest-distance-2 *example-7*))
+    (eql-p 72 (shortest-distance-2 *example-8*)))
 
-(deftest "solution-2 test" ()
-  (eql-p 1642 (solution-2)))
+  (deftest "solution-1 test" ()
+    (eql-p 2796 (solution-1)))
+
+  (deftest "solution-2 test" ()
+    (eql-p 1642 (solution-2))))

@@ -38,13 +38,13 @@
 	  (run-robot program panels next-ip next-x next-y next-direction)))))
 
 (defun solution-1 ()
-  (let ((input (allocate-program-memory (read-input)))
+  (let ((input (allocate-program-memory (read-input) 1200))
 	(panels (make-hash-table :test #'equal)))
     (run-robot input panels)
     (hash-table-count panels)))
 
 (defun solution-2 ()
-  (let ((input (allocate-program-memory (read-input)))
+  (let ((input (allocate-program-memory (read-input) 1200))
 	(panels (make-hash-table :test #'equal))
 	(file #p"/tmp/day-11.png"))
     (setf (gethash (cons 0 0) panels) 1)

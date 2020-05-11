@@ -120,7 +120,7 @@
 (defun solution-2 ()
   (let ((map (make-hash-table :test #'equal))
 	(visited (make-hash-table :test #'equalp))
-	(input (allocate-program-memory (read-input))))
+	(input (allocate-program-memory (read-input) 1200)))
     (explore-map
      (make-droid :program input :ip 0 :distance 0 :location (make-point :x 0 :y 0))
      visited

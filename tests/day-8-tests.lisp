@@ -3,5 +3,7 @@
 
 (in-package :day-8-tests)
 
-(deftest "solution-1" ()
-  (eql-p 2048 (solution-1)))
+(defsuite :day-8 ()
+
+  (deftest "solution-1" ()
+    (eql-p 2048 (solution-1))))

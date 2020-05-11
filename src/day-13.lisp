@@ -56,4 +56,4 @@
 (defun solution-2 ()
   (let ((input (read-input)))
     (setf (svref input 0) 2)
-    (run-game (allocate-program-memory input))))
+    (run-game (allocate-program-memory input 2700))))

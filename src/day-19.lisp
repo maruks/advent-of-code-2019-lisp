@@ -21,9 +21,11 @@
 	(in outer (counting (eq 1 result) ))))))
 
 (defun solution-1 ()
-  (let ((program (allocate-program-memory (read-input)))
+  (let ((program (allocate-program-memory (read-input) 600))
 	(map (make-hash-table :test #'equal)))
-    (scan-map program map)))
+    (scan-map program map)
+    ;;(print-map 50 50 map)
+    ))
 
 (defun solution-2 ()
   )

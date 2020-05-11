@@ -56,14 +56,16 @@
     "7 XCVML => 6 RJRHP"
     "5 BHXH, 4 VRPVC => 5 LTCX"))
 
-(deftest "find-required-ore-for-input test" ()
-  (eql-p 165 (find-required-ore-for-input *example-0*))
-  (eql-p 13312 (find-required-ore-for-input *example-1*))
-  (eql-p 180697 (find-required-ore-for-input *example-2*))
-  (eql-p 2210736 (find-required-ore-for-input *example-3*)))
+(defsuite :day-14 ()
 
-(deftest "solution-1 test" ()
-  (eql-p 485720 (solution-1)))
+  (deftest "find-required-ore-for-input test" ()
+    (eql-p 165 (find-required-ore-for-input *example-0*))
+    (eql-p 13312 (find-required-ore-for-input *example-1*))
+    (eql-p 180697 (find-required-ore-for-input *example-2*))
+    (eql-p 2210736 (find-required-ore-for-input *example-3*)))
 
-(deftest "solution-2 test" ()
-  (eql-p 3848998 (solution-2)))
+  (deftest "solution-1 test" ()
+    (eql-p 485720 (solution-1)))
+
+  (deftest "solution-2 test" ()
+    (eql-p 3848998 (solution-2))))

@@ -3,5 +3,7 @@
 
 (in-package :day-19-tests)
 
-(deftest "solution-1 test" ()
-  (eql-p 162 (solution-1)))
+(defsuite :day-19 ()
+
+  (deftest "solution-1 test" ()
+    (eql-p 162 (solution-1))))

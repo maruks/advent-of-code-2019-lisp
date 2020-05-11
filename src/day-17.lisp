@@ -27,7 +27,7 @@
       (collect k))))
 
 (defun solution-1 ()
-  (let* ((input (allocate-program-memory (read-input)))
+  (let* ((input (allocate-program-memory (read-input) 3800))
 	 (out (run-program-collect-results input '()))
 	 (map (populate-map out (make-hash-table :test #'equal))))
     (reduce #'+ (mapcar (lambda (p) (* (car p) (cdr p))) (locate-intersections map)) :initial-value 0)))
@@ -108,7 +108,7 @@
   (list (char-code #\n) (char-code #\Newline)))
 
 (defun solution-2 ()
-  (let* ((input (allocate-program-memory (read-input)))
+  (let* ((input (allocate-program-memory (read-input) 3800))
 	 (out (run-program-collect-results (copy-array input) '()))
 	 (map (populate-map out (make-hash-table :test #'equal)))
 	 (path-str (path-to-string (collect-path map (find-robot-location map) :up)))

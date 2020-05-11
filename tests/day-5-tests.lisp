@@ -3,15 +3,6 @@
 
 (in-package :day-5-tests)
 
-(deftest "decode" ()
-  (equal-p '(2 (0 1 0)) (multiple-value-list (decode 1002))))
-
-(deftest "solution-1" ()
-  (eql-p 13294380 (solution-1)))
-
-(deftest "solution-2" ()
-  (eql-p 11460760 (solution-2)))
-
 (defparameter *example-1* #(3 9 8 9 10 9 4 9 99 -1 8))
 (defparameter *example-2* #(3 9 7 9 10 9 4 9 99 -1 8))
 (defparameter *example-3* #(3 3 1108 -1 8 3 4 3 99))
@@ -23,31 +14,42 @@
 (defun test-program (program input)
   (run-program (copy-array program) (list input)))
 
-(deftest "run-program" ()
-  (eql-p 1 (test-program *example-1* 8))
-  (eql-p 0 (test-program *example-1* 7))
-  (eql-p 0 (test-program *example-1* 9))
+(defsuite :day-5 ()
 
-  (eql-p 1 (test-program *example-2* 7))
-  (eql-p 0 (test-program *example-2* 8))
-  (eql-p 0 (test-program *example-2* 9))
+  (deftest "decode" ()
+    (equal-p '(2 (0 1 0)) (multiple-value-list (decode 1002))))
 
-  (eql-p 1 (test-program *example-3* 8))
-  (eql-p 0 (test-program *example-3* 7))
-  (eql-p 0 (test-program *example-3* 9))
+  (deftest "solution-1" ()
+    (eql-p 13294380 (solution-1)))
 
-  (eql-p 1 (test-program *example-4* 7))
-  (eql-p 0 (test-program *example-4* 8))
-  (eql-p 0 (test-program *example-4* 9))
+  (deftest "solution-2" ()
+    (eql-p 11460760 (solution-2)))
 
-  (eql-p 0 (test-program *example-5* 0))
-  (eql-p 1 (test-program *example-5* 5))
-  (eql-p 1 (test-program *example-5* -2))
+  (deftest "run-program" ()
+    (eql-p 1 (test-program *example-1* 8))
+    (eql-p 0 (test-program *example-1* 7))
+    (eql-p 0 (test-program *example-1* 9))
 
-  (eql-p 0 (test-program *example-6* 0))
-  (eql-p 1 (test-program *example-6* 5))
-  (eql-p 1 (test-program *example-6* -2))
+    (eql-p 1 (test-program *example-2* 7))
+    (eql-p 0 (test-program *example-2* 8))
+    (eql-p 0 (test-program *example-2* 9))
 
-  (eql-p 999 (test-program *example-7* 7))
-  (eql-p 1000 (test-program *example-7* 8))
-  (eql-p 1001 (test-program *example-7* 10)))
+    (eql-p 1 (test-program *example-3* 8))
+    (eql-p 0 (test-program *example-3* 7))
+    (eql-p 0 (test-program *example-3* 9))
+
+    (eql-p 1 (test-program *example-4* 7))
+    (eql-p 0 (test-program *example-4* 8))
+    (eql-p 0 (test-program *example-4* 9))
+
+    (eql-p 0 (test-program *example-5* 0))
+    (eql-p 1 (test-program *example-5* 5))
+    (eql-p 1 (test-program *example-5* -2))
+
+    (eql-p 0 (test-program *example-6* 0))
+    (eql-p 1 (test-program *example-6* 5))
+    (eql-p 1 (test-program *example-6* -2))
+
+    (eql-p 999 (test-program *example-7* 7))
+    (eql-p 1000 (test-program *example-7* 8))
+    (eql-p 1001 (test-program *example-7* 10))))

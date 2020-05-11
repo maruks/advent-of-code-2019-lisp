@@ -1,6 +1,6 @@
 (defpackage :day-17
   (:use :cl :advent-of-code :iterate :alexandria)
-  (:import-from :day-5 :run-program-1 :run-program-collect-results :allocate-program-memory)
+  (:import-from :day-5 :run-program-collect-results :allocate-program-memory)
   (:export :solution-1 :solution-2))
 
 (in-package :day-17)
@@ -18,14 +18,6 @@
 	    (populate-map (cdr xs) map (1+ x) y))))
     map))
 
-(defun print-map (map)
-  (iter
-    (for y :from 50 :downto 0)
-    (iter
-      (for x :below 50)
-      (format t "~a" (gethash (cons x (- 50 y) ) map #\Space)))
-    (format t "~%")))
-
 (defun locate-intersections (map)
   (iter
     (for (k v) :in-hashtable map)
@@ -38,7 +30,6 @@
   (let* ((input (allocate-program-memory (read-input)))
 	 (out (run-program-collect-results input '()))
 	 (map (populate-map out (make-hash-table :test #'equal))))
-    ;; (print-map map)
     (reduce #'+ (mapcar (lambda (p) (* (car p) (cdr p))) (locate-intersections map)) :initial-value 0)))
 
 (defun find-robot-location (map)

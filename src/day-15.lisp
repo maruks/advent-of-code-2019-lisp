@@ -70,7 +70,7 @@
       ((and (= -20 rx) (= 18 ry)) #\O)
       (t (if (eq what (gethash (cons rx ry) map)) #\# #\Space)))))
 
-(defun print-map (map what)
+(defun print-map-2 (map what)
   (iter
     (for y below 50)
     (iter
@@ -125,5 +125,5 @@
      (make-droid :program input :ip 0 :distance 0 :location (make-point :x 0 :y 0))
      visited
      map)
-    ;; (print-map map :wall)
+    ;; (print-map-2 map :wall)
     (fill-with-oxygen (list (cons -20 18)) map)))

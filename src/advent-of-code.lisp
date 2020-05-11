@@ -2,8 +2,10 @@
   (:use :cl :uiop/stream :split-sequence :iterate)
   (:import-from :ppcre :create-scanner)
   (:import-from :alexandria :with-gensyms :if-let)
-  (:export read-file read-lines read-string read-code resource-file sort-by-distance-fn print-hash repeat
-	   make-point point-x point-y manhattan-distance distance compare-points adjacent memoize-function λ -> ->>))
+  (:export read-file read-lines read-string read-code resource-file
+	   sort-by-distance-fn print-hash repeat print-map
+	   make-point point-x point-y manhattan-distance distance
+	   compare-points adjacent memoize-function λ -> ->>))
 
 (in-package :advent-of-code)
 
@@ -56,6 +58,14 @@
   (iter
     (for (k v) in-hashtable map)
     (format t "~a -> ~a ~%" k v)))
+
+(defun print-map (height width map)
+  (iter
+    (for y :below height)
+    (iter
+      (for x :below width)
+      (format t "~a" (gethash (cons x y) map #\Space)))
+    (format t "~%")))
 
 (defun repeat (value n)
   (iter

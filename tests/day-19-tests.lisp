@@ -6,4 +6,7 @@
 (defsuite :day-19 ()
 
   (deftest "solution-1 test" ()
-    (eql-p 162 (solution-1))))
+    (eql-p 162 (solution-1)))
+
+  (deftest "solution-2 test" ()
+    (eql-p 13021056 (solution-2))))

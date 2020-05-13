@@ -78,18 +78,17 @@
 
 (defun do-step (ip program read-fn write-fn)
   (multiple-value-bind (opcode param-modes) (decode (svref program ip))
-    (cond
-      ((eql opcode +add+) (binary-op #'+ ip program param-modes))
-      ((eql opcode +multiply+) (binary-op #'* ip program param-modes))
-      ((eql opcode +in+) (read-input ip program read-fn param-modes))
-      ((eql opcode +out+) (write-to-output ip program write-fn param-modes))
-      ((eql opcode +jmp-if-zero+) (cond-jmp ip program #'zerop param-modes))
-      ((eql opcode +jmp-if-not-zero+) (cond-jmp ip program (λ (x) (not (zerop x))) param-modes))
-      ((eql opcode +less-than+) (compare ip program #'< param-modes))
-      ((eql opcode +equals+) (compare ip program #'eql param-modes))
-      ((eql opcode +adjust-base+) (adjust-base ip program param-modes))
-      ((eql opcode +halt+) nil)
-      (t (error "Invalid opcode")))))
+    (ecase opcode
+      (#.+add+ (binary-op #'+ ip program param-modes))
+      (#.+multiply+ (binary-op #'* ip program param-modes))
+      (#.+in+ (read-input ip program read-fn param-modes))
+      (#.+out+ (write-to-output ip program write-fn param-modes))
+      (#.+jmp-if-zero+ (cond-jmp ip program #'zerop param-modes))
+      (#.+jmp-if-not-zero+ (cond-jmp ip program (λ (x) (not (zerop x))) param-modes))
+      (#.+less-than+ (compare ip program #'< param-modes))
+      (#.+equals+ (compare ip program #'eql param-modes))
+      (#.+adjust-base+ (adjust-base ip program param-modes))
+      (#.+halt+ nil))))
 
 (defun run-program (program inputs)
   (iter

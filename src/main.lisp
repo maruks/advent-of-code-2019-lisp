@@ -33,6 +33,7 @@
   (day 16 "Flawed Frequency Transmission")
   (day 17 "Set and Forget")
   (day 18 "Many-Worlds Interpretation")
+  (day 19 "Tractor Beam")
   )
 
 (defun main ()

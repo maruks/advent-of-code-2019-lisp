@@ -14,20 +14,17 @@
 
 (defvar *program*)
 
-(defun scan-map (map)
+(defun scan-map ()
   (iter outer
     (for x :below +map-size+)
     (iter
       (for y :below +map-size+)
-      (multiple-value-bind (next-ip result) (run-program-1 (copy-array *program*) (list x y) 0)
-	(declare (ignore next-ip))
-        (setf (gethash (cons x y) map) (if (zerop result) #\. #\#))
-	(in outer (counting (eq 1 result) ))))))
+      (for result = (scan-location x y))
+      (in outer (counting result)))))
 
 (defun solution-1 ()
-  (let ((*program* (allocate-program-memory (read-input) 600))
-	(map (make-hash-table :test #'equal)))
-    (scan-map map)))
+  (let ((*program* (allocate-program-memory (read-input) 600)))
+    (scan-map)))
 
 (defparameter *scan-location-cache* (make-hash-table))
 

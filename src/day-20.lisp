@@ -1,6 +1,6 @@
 (defpackage :day-20
   (:use :cl :advent-of-code :iterate :alexandria :queues)
-  (:export :solution-1 :shortest-path-length :read-input :solution-2))
+  (:export :solution-1 :shortest-path-length :shortest-path-length-2 :read-input :solution-2))
 
 (in-package :day-20)
 
@@ -104,9 +104,8 @@
 		  (make-hash-table :test #'equal))))
       (iter
 	(for (k v) :in-hashtable paths)
-	(push (cons from v) (gethash k graph))
 	(push (cons k v) (gethash from graph)))
-      (add-paths (set-difference (cdr from-locations) (hash-table-keys paths) :test #'equal) map graph))))
+      (add-paths (cdr from-locations) map graph))))
 
 (defun build-graph (map portals)
   (let ((graph (make-hash-table :test #'equal))
@@ -148,5 +147,75 @@
 (defun solution-1 ()
   (shortest-path-length (read-input #p"day-20-input.txt")))
 
+;; --------------------------------- PART 2 ---------------------------------
+
+(defun locations-to-explore-2 (map visited from)
+  (remove-if (λ (p) (or
+		     (char= #\# (gethash p map))
+		     (gethash p visited)))
+	     (adjacent from)))
+
+(defun center-location (input)
+  (let ((width (iter
+		 (for i :in input)
+		 (maximize (length i)))))
+    (cons (truncate width 2) (truncate (length input) 2))))
+
+(defun inner-portals (queue map visited result)
+  (if-let (location (qpop queue))
+    (let ((locations (locations-to-explore-2 map visited location))
+	  (portal? (char= #\. (gethash location map))))
+      (if portal?
+	  (setf (gethash location result) t)
+	  (iter
+	    (for p :in locations)
+	    (when (null (gethash p visited))
+	      (qpush queue p)
+	      (setf (gethash p visited) t))))
+      (setf (gethash location visited) t)
+      (inner-portals queue map visited result))
+    result))
+
+(defun find-inner-portals (map center)
+  (inner-portals (new-queue center :simple-queue) map (make-hash-table :test #'equal) (make-hash-table :test #'equal)))
+
+(defun locations-to-explore-3 (locations from inner-portals level)
+  (let ((result (mapcar (λ (loc-dist)
+		    (destructuring-bind (location . distance) loc-dist
+		      (let ((next-level (if (= +warp-distance+ distance)
+					    (if (gethash from inner-portals) (1+ level) (1- level))
+					    level)))
+			(cons (cons location next-level) distance))))
+		  locations)))
+    (remove-if #'minusp result :key #'cdar)))
+
+(defun find-shortest-path-length-2 (queue graph end inner-portals visited)
+  (when-let (sl (qpop queue))
+    (let ((location-level (search-location-location sl))
+	  (distance (search-location-distance sl)))
+      (destructuring-bind (location . level) location-level
+	(if (and (equal location end) (zerop level))
+	    distance
+	    (let ((locations (locations-to-explore-3 (gethash location graph) location inner-portals level)))
+	      (iter
+		(for (p . d) :in locations)
+		(when (null (gethash p visited))
+		  (qpush queue (make-search-location :location p :distance (+ distance d)))))
+	      (setf (gethash location-level visited) t)
+	      (find-shortest-path-length-2 queue graph end inner-portals visited)))))))
+
+(defun shortest-path-length-2 (input)
+  (let* ((map (read-map input))
+	 (center (center-location input))
+	 (inner-portals (find-inner-portals map center))
+	 (portals (sort (find-portals map) (λ (p1 p2) (string< (string (car p1)) (string (car p2)))))))
+    (multiple-value-bind (graph start end) (build-graph map portals)
+      (find-shortest-path-length-2
+       (new-queue (make-search-location :location (cons start 0) :distance 0) :priority-queue :compare #'compare-search-locations)
+       graph
+       end
+       inner-portals
+       (make-hash-table :test #'equal)))))
+
 (defun solution-2 ()
-  )
+  (shortest-path-length-2 (read-input #p"day-20-input.txt")))

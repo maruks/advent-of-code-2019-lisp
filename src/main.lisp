@@ -35,6 +35,7 @@
   (day 18 "Many-Worlds Interpretation")
   (day 19 "Tractor Beam")
   (day 20 "Donut Maze")
+  (day 21 "Springdroid Adventure")
   )
 
 (defun main ()

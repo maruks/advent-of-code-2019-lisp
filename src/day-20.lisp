@@ -83,8 +83,7 @@
 		 (plusp distance))
 	(setf (gethash location results) distance))
       (setf (gethash location visited) t)
-      (iter
-	(for p :in locations)
+      (dolist (p locations)
 	(qpush queue p))
       (shortest-paths queue map graph visited results))
     results))
@@ -167,8 +166,7 @@
 	  (portal? (char= #\. (gethash location map))))
       (if portal?
 	  (setf (gethash location result) t)
-	  (iter
-	    (for p :in locations)
+	  (dolist (p locations)
 	    (when (null (gethash p visited))
 	      (qpush queue p)
 	      (setf (gethash p visited) t))))

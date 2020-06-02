@@ -1,5 +1,5 @@
 (defpackage :day-15
-  (:use :cl :advent-of-code :iterate :alexandria :queues)
+  (:use :cl :aoc :iterate :alexandria :queues)
   (:import-from :day-5 :run-program-1 :allocate-program-memory)
   (:export :solution-1 :solution-2))
 
@@ -45,8 +45,7 @@
 	   (found-distance (find-if #'consp moved)))
       (or found-distance
 	  (progn
-	    (iter
-	      (for m in moved)
+	    (dolist (m moved)
 	      (setf (gethash (droid-location m) visited) t)
 	      (qpush queue m))
 	    (setf (gethash location visited) t)
@@ -72,9 +71,9 @@
 
 (defun print-map-2 (map what)
   (iter
-    (for y below 50)
+    (for y :below 50)
     (iter
-      (for x below 50)
+      (for x :below 50)
       (format t "~a" (print-xy x y map what)))
     (format t "~%")))
 
@@ -112,7 +111,7 @@
 		     (λ (p) (eq :empty (gethash p map)))
 		     (delete-duplicates (mappend #'adjacent from) :test #'equal))))
 	(iter
-	  (for f in from)
+	  (for f :in from)
 	  (setf (gethash f map) :oxygen))
 	(fill-with-oxygen filled map (1+ time)))
       (1- time)))

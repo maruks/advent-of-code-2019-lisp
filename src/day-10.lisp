@@ -1,5 +1,5 @@
 (defpackage :day-10
-  (:use :cl :advent-of-code :iterate :alexandria)
+  (:use :cl :aoc :iterate :alexandria)
   (:export :read-map :visible-points :best-location-point :solution-1 :solution-2))
 
 (in-package :day-10)

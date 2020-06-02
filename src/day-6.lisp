@@ -1,5 +1,5 @@
 (defpackage :day-6
-  (:use :cl :split-sequence :alexandria :iterate :advent-of-code)
+  (:use :cl :split-sequence :alexandria :iterate :aoc)
   (:export :solution-1 :solution-2))
 
 (in-package :day-6)

@@ -1,5 +1,5 @@
 (defpackage :day-14
-  (:use :cl :advent-of-code :iterate :alexandria :ppcre)
+  (:use :cl :aoc :iterate :alexandria :ppcre)
   (:export :solution-1 :find-required-ore-for-input :solution-2))
 
 (in-package :day-14)

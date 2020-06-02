@@ -1,5 +1,5 @@
 (defpackage :day-11-tests
-  (:use :cl :cacau :assert-p :day-11 :advent-of-code))
+  (:use :cl :cacau :assert-p :day-11 :aoc))
 
 (in-package :day-11-tests)
 

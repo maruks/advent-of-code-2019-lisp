@@ -1,5 +1,5 @@
 (defpackage :day-5
-  (:use :cl :iterate :advent-of-code)
+  (:use :cl :iterate :aoc)
   (:export :solution-1 :solution-2 :decode :run-program :run-program-1 :allocate-program-memory :run-program-collect-results))
 
 (in-package :day-5)

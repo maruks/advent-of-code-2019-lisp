@@ -1,5 +1,5 @@
 (defpackage :day-16
-  (:use :cl :advent-of-code :iterate :alexandria)
+  (:use :cl :aoc :iterate :alexandria)
   (:export :solution-1 :solution-2 :pattern-number :process-all))
 
 (in-package :day-16)

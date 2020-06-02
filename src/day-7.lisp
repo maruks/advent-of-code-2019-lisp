@@ -1,5 +1,5 @@
 (defpackage :day-7
-  (:use :cl :split-sequence :alexandria :iterate :advent-of-code)
+  (:use :cl :split-sequence :alexandria :iterate :aoc)
   (:import-from :day-5 :run-program-1 :run-program)
   (:export :solution-1 :solution-2))
 

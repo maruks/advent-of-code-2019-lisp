@@ -1,5 +1,5 @@
 (defpackage :day-9
-  (:use :cl :advent-of-code)
+  (:use :cl :aoc)
   (:import-from :day-5 :run-program :allocate-program-memory :run-program-collect-results)
   (:export :solution-1 :solution-2))
 

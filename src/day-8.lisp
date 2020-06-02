@@ -1,5 +1,5 @@
 (defpackage :day-8
-  (:use :cl :zpng :iterate :advent-of-code)
+  (:use :cl :zpng :iterate :aoc)
   (:export :solution-1 :solution-2))
 
 (in-package :day-8)

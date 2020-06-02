@@ -1,5 +1,5 @@
 (defpackage :day-11
-  (:use :cl :advent-of-code :iterate :alexandria :zpng)
+  (:use :cl :aoc :iterate :alexandria :zpng)
     (:import-from :day-5 :run-program-1 :allocate-program-memory)
     (:export :solution-1 :solution-2))
 

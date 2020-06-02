@@ -1,5 +1,5 @@
 (defpackage :day-4
-  (:use :cl :advent-of-code)
+  (:use :cl :aoc)
   (:export :solution-1 :solution-2))
 
 (in-package :day-4)

@@ -1,5 +1,5 @@
 (defpackage :day-21
-  (:use :cl :advent-of-code :iterate :alexandria)
+  (:use :cl :aoc :iterate :alexandria)
   (:import-from :day-5 :run-program-1 :run-program-collect-results :allocate-program-memory)
   (:import-from :str :concat :add-suffix)
   (:export :solution-1 :solution-2))

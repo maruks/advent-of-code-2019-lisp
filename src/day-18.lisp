@@ -1,5 +1,5 @@
 (defpackage :day-18
-  (:use :cl :advent-of-code :iterate :alexandria :queues)
+  (:use :cl :aoc :iterate :alexandria :queues)
   (:export :solution-1 :solution-2 :shortest-distance :shortest-distance-2))
 
 (in-package :day-18)
@@ -9,9 +9,12 @@
 
 (defstruct search-location location distance)
 
+(defmacro ->location (map location)
+  `(aref ,map (car ,location) (cdr ,location)))
+
 (defun read-map (lines)
   (iter
-    (with map = (make-hash-table :test #'equal))
+    (with map = (make-array (list (length (car lines)) (length lines)) :element-type 'character))
     (with start-location = (cons -1 -1))
     (with locations)
     (for i :in lines)
@@ -22,11 +25,11 @@
       (cond
 	((char= c #\@) (setf start-location (cons x y)))
 	((alpha-char-p c) (push (cons x y) locations)))
-      (setf (gethash (cons x y) map) c))
+      (setf (aref map x y) c))
     (finally (return (values map start-location locations)))))
 
 (defun is-wall? (map location)
-  (char= (gethash location map) #\#))
+  (char= (->location map location) #\#))
 
 (defun locations-to-explore (map visited from distance)
   (let ((locations (remove-if (λ (p) (or
@@ -42,14 +45,13 @@
   (when-let (sl (qpop queue))
     (let* ((location (search-location-location sl))
 	   (distance (search-location-distance sl))
-	   (node (gethash location map)))
+	   (node (->location map location)))
       (if (and (alpha-char-p node) (null (equal from location)))
 	  (progn
-	    (push (cons node distance) (gethash (gethash from map) graph))
+	    (push (cons node distance) (gethash (->location map from) graph))
 	    (populate-graph queue from map graph visited))
 	  (let ((new-locations (locations-to-explore map visited location distance)))
-	    (iter
-	      (for p :in new-locations)
+	    (dolist (p new-locations)
 	      (setf (gethash (search-location-location p) visited) t)
 	      (qpush queue p))
 	    (populate-graph queue from map graph visited))))))
@@ -163,11 +165,11 @@
 (defun modify-map (map start-location robot-locations)
   (iter
     (for p :in (cons start-location (adjacent start-location)))
-    (setf (gethash p map) #\#))
+    (setf (->location map p) #\#))
   (iter
     (with robots = '(#\1 #\2 #\3 #\4))
     (for (k . v) :in (pairlis robots robot-locations))
-    (setf (gethash v map) k)
+    (setf (->location map v) k)
     (finally (return robots))))
 
 (defun shortest-distance-2 (input)

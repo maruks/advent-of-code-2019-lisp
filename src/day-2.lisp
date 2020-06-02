@@ -25,9 +25,9 @@
       (t (error "Invalid opcode")))))
 
 (defun run-intcode (code)
-  (iterate
+  (iter
     (initially (setq ip 0))
-    (for ip next (do-step ip code))
+    (for ip :next (do-step ip code))
     (while ip)
     (finally (return code))))
 
@@ -46,8 +46,8 @@
   (let* ((code (read-code #p"day-2-input.txt"))
 	 (size (length code))
 	 (args (iterate outer
-		 (for i from 0 below size)
-		 (iterate (for j from 0 below size)
+		 (for i :from 0 :below size)
+		 (iterate (for j :from 0 :below size)
 		   (when (eql 19690720 (try-input code i j))
 		     (return-from outer (cons i j)))))))
     (+ (* 100 (car args)) (cdr args))))

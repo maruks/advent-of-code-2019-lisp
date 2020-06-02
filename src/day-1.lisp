@@ -1,5 +1,5 @@
 (defpackage :day-1
-  (:use :cl :iterate :advent-of-code)
+  (:use :cl :iterate :aoc)
   (:export :solution-1 :solution-2 :fuel :fuel-2))
 
 (in-package :day-1)

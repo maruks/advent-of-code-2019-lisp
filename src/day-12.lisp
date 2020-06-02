@@ -1,5 +1,5 @@
 (defpackage :day-12
-  (:use :cl :advent-of-code :iterate :alexandria)
+  (:use :cl :aoc :iterate :alexandria)
   (:import-from :ppcre :all-matches-as-strings)
   (:export :solution-1 :solution-2))
 

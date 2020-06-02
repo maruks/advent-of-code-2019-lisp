@@ -1,5 +1,6 @@
 (defpackage :advent-of-code
   (:use :cl :uiop/stream :split-sequence :iterate)
+  (:nicknames :aoc)
   (:import-from :ppcre :create-scanner)
   (:import-from :alexandria :with-gensyms :if-let)
   (:export read-file read-lines read-string read-code resource-file
@@ -56,7 +57,7 @@
 
 (defun print-hash (map)
   (iter
-    (for (k v) in-hashtable map)
+    (for (k v) :in-hashtable map)
     (format t "~a -> ~a ~%" k v)))
 
 (defun print-map (height width map)

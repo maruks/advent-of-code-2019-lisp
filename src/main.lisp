@@ -36,6 +36,7 @@
   (day 19 "Tractor Beam")
   (day 20 "Donut Maze")
   (day 21 "Springdroid Adventure")
+  (day 22 "Slam Shuffle")
   )
 
 (defun main ()

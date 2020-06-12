@@ -1,5 +1,5 @@
 (defpackage :day-20
-  (:use :cl :advent-of-code :iterate :alexandria :queues)
+  (:use :cl :aoc :iterate :alexandria :queues)
   (:export :solution-1 :shortest-path-length :shortest-path-length-2 :read-input :solution-2))
 
 (in-package :day-20)

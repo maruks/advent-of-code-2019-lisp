@@ -24,7 +24,7 @@
 
 (defun run-cycle (phase-settings &optional (input 0))
   (iter
-    (for i below 5)
+    (for i :below 5)
     (for ip = (svref *amp-ips* i))
     (for in = (if (zerop i) input out))
     (for (values next-ip out) = (run-program-1
@@ -37,13 +37,13 @@
 (defun run-until-halt (phase-settings)
   (iter
     (for (values next-ip out) = (run-cycle phase-settings p-out))
-    (for p-out previous out initially 0)
+    (for p-out :previous out :initially 0)
     (while next-ip)
     (finally (return p-out))))
 
 (defun run-amplifiers (phase-settings)
   (iter
-    (for i below 5)
+    (for i :below 5)
     (setf (svref *amp-code* i) (copy-array *program*))
     (setf (svref *amp-ips* i) 0))
   (let ((result (run-until-halt phase-settings)))

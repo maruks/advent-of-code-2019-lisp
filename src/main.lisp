@@ -37,6 +37,7 @@
   (day 20 "Donut Maze")
   (day 21 "Springdroid Adventure")
   (day 22 "Slam Shuffle")
+  (day 23 "Category Six")
   )
 
 (defun main ()

@@ -38,6 +38,8 @@
   (day 21 "Springdroid Adventure")
   (day 22 "Slam Shuffle")
   (day 23 "Category Six")
+  (day 23 "Category Six")
+  (day 24 "Planet of Discord")
   )
 
 (defun main ()

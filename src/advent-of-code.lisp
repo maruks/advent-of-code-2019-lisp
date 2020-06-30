@@ -4,7 +4,7 @@
   (:import-from :ppcre :create-scanner)
   (:import-from :alexandria :with-gensyms :if-let)
   (:export read-file read-lines read-string read-code resource-file
-	   sort-by-distance-fn print-hash repeat print-map
+	   sort-by-distance-fn print-hash repeat print-map print-2d-array
 	   make-point point-x point-y manhattan-distance distance
 	   compare-points adjacent memoize-function λ -> ->>))
 
@@ -67,6 +67,15 @@
       (for x :below width)
       (format t "~a" (gethash (cons x y) map #\Space)))
     (format t "~%")))
+
+(defun print-2d-array (map)
+  (destructuring-bind (height width) (array-dimensions map)
+    (iter
+      (for y :below height)
+      (iter
+	(for x :below width)
+	(format t "~a" (aref map y x)))
+      (format t "~%"))))
 
 (defun repeat (value n)
   (iter

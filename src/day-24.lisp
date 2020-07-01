@@ -21,7 +21,7 @@
     (for y = (+ yp (cdr delta)))
     (counting (and (>= x 0) (>= y 0) (< x +width+) (< y +height+) (char= +bug+ (aref map y x))))))
 
-(defun iterate-map (map)
+(defun update-map (map)
   (iter
     (with new-map = (make-array (list +height+ +width+) :element-type 'character))
     (for x :below +width+)
@@ -63,7 +63,7 @@
 	rating
 	(progn
 	  (setf (gethash rating ratings) t)
-	  (first-layout ratings (iterate-map map))))))
+	  (first-layout ratings (update-map map))))))
 
 (defun solution-1 ()
   (let ((map (read-map (read-input))))
@@ -81,34 +81,38 @@
     (setf (aref map 2 2) +sub-level+)
     map))
 
+(defparameter *location-deltas*
+  (list
+   :top (mapcar (curry #'cons 0) (iota +width+))
+   :bottom (mapcar (curry #'cons (1- +height+)) (iota +width+))
+   :left (mapcar (rcurry #'cons 0) (iota +height+))
+   :right (mapcar (rcurry #'cons (1- +width+)) (iota +height+))))
+
 (defun embedded-map-bugs (map location)
-  (let ((deltas (ecase location
-		  (:top (mapcar (curry #'cons 0) (iota +width+)))
-		  (:bottom (mapcar (curry #'cons (1- +height+)) (iota +width+)))
-		  (:left (mapcar (rcurry #'cons 0) (iota +height+)))
-		  (:right (mapcar (rcurry #'cons (1- +width+)) (iota +height+))))))
-    (iter
-      (for d :in deltas)
-      (counting (char= +bug+ (aref map (car d) (cdr d)))))))
+  (iter
+    (for d :in (getf *location-deltas* location))
+    (counting (char= +bug+ (aref map (car d) (cdr d))))))
 
 (defun adjacent-bugs-2 (xp yp level all-maps)
-  (flet ((count-bugs (y x location)
-	   (multiple-value-bind (read-map read-x read-y) (if (and (>= x 0) (>= y 0) (< x +width+) (< y +height+))
-							     (values (gethash level all-maps) x y)
-							     (values
-							      (gethash (1- level) all-maps)
-							      (cond
-								((minusp x) 1)
-								((>= x +width+) 3)
-								(t 2))
-							      (cond
-								((minusp y) 1)
-								((>= y +height+) 3)
-								(t 2))))
-	     (let* ((c (aref read-map read-y read-x)))
-	       (cond ((char= c +sub-level+) (embedded-map-bugs (gethash (1+ level) all-maps) location))
-		     ((char= c +bug+) 1)
-		     (t 0))))))
+  (labels ((inside-map? (x y)
+	     (and (>= x 0) (>= y 0) (< x +width+) (< y +height+)))
+	   (count-bugs (y x location)
+	     (multiple-value-bind (read-map read-x read-y) (if (inside-map? x y)
+							       (values (gethash level all-maps) x y)
+							       (values
+								(gethash (1- level) all-maps)
+								(cond
+								  ((minusp x) 1)
+								  ((>= x +width+) 3)
+								  (t 2))
+								(cond
+								  ((minusp y) 1)
+								  ((>= y +height+) 3)
+								  (t 2))))
+	       (let* ((c (aref read-map read-y read-x)))
+		 (cond ((char= c +sub-level+) (embedded-map-bugs (gethash (1+ level) all-maps) location))
+		       ((char= c +bug+) 1)
+		       (t 0))))))
     (iter
       (for delta :in '((:bottom (-1 . 0)) (:top (1 . 0)) (:right (0 . -1)) (:left (0 . 1))))
       (for x = (+ xp (cdadr delta)))
@@ -116,7 +120,7 @@
       (for location = (car delta))
       (sum (count-bugs y x location)))))
 
-(defun iterate-map-2 (level all-maps)
+(defun update-map-2 (level all-maps)
   (iter
     (with map = (gethash level all-maps))
     (with new-map = (empty-map))
@@ -134,9 +138,9 @@
 				   (t +empty+)))))
     (finally (return new-map))))
 
-(defun iterate-maps (all-maps iteration)
+(defun update-maps (all-maps iteration)
   (let* ((levels (remove-if (λ (i) (> (abs i) (1+ iteration) )) (hash-table-keys all-maps)))
-	 (next-maps (mapcar (λ (level) (iterate-map-2 level all-maps)) levels)))
+	 (next-maps (mapcar (λ (level) (update-map-2 level all-maps)) levels)))
     (iter
       (for level :in levels)
       (for map :in next-maps)
@@ -162,12 +166,12 @@
 	   (bugs (mapcar (compose #'count-bugs (rcurry #'gethash all-maps)) levels)))
       (reduce #'+ bugs :initial-value 0))))
 
-(defun part-2 (input iterations)
+(defun run-iterations (input iterations)
   (let* ((map (read-map-2 input))
 	 (all-maps (create-maps map (1+ iterations))))
     (dotimes (i iterations)
-      (iterate-maps all-maps i))
+      (update-maps all-maps i))
     (count-all-bugs all-maps)))
 
 (defun solution-2 ()
-  (part-2 (read-input) 200))
+  (run-iterations (read-input) 200))

@@ -1,8 +1,8 @@
-(defpackage :day-14
-  (:use :cl :aoc :iterate :alexandria :ppcre)
-  (:export :solution-1 :find-required-ore-for-input :solution-2))
+(defpackage #:day-14
+  (:use #:cl #:aoc #:iterate #:alexandria #:ppcre)
+  (:export #:solution-1 #:find-required-ore-for-input #:solution-2))
 
-(in-package :day-14)
+(in-package #:day-14)
 
 (defparameter *number* #r"\\d+")
 (defparameter *chemical* #r"[A-Z]+")

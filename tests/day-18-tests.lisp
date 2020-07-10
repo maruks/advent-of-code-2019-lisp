@@ -1,7 +1,7 @@
-(defpackage :day-18-tests
-  (:use :cl :cacau :assert-p :day-18 :alexandria))
+(defpackage #:day-18-tests
+  (:use #:cl #:cacau #:assert-p #:day-18 #:alexandria))
 
-(in-package :day-18-tests)
+(in-package #:day-18-tests)
 
 (defparameter *example-1*
   '("#########"

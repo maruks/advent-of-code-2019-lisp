@@ -1,8 +1,8 @@
-(defpackage :day-1
-  (:use :cl :iterate :aoc)
-  (:export :solution-1 :solution-2 :fuel :fuel-2))
+(defpackage #:day-1
+  (:use #:cl #:iterate #:aoc)
+  (:export #:solution-1 #:solution-2 #:fuel #:fuel-2))
 
-(in-package :day-1)
+(in-package #:day-1)
 
 (defun fuel (n)
   (- (truncate n 3) 2))

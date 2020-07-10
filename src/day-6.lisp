@@ -1,8 +1,8 @@
-(defpackage :day-6
-  (:use :cl :split-sequence :alexandria :iterate :aoc)
-  (:export :solution-1 :solution-2))
+(defpackage #:day-6
+  (:use #:cl #:split-sequence #:alexandria #:iterate #:aoc)
+  (:export #:solution-1 #:solution-2))
 
-(in-package :day-6)
+(in-package #:day-6)
 
 (defun read-input (file)
   (flet ((readln (str)

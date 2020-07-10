@@ -1,8 +1,8 @@
-(defpackage :day-20
-  (:use :cl :aoc :iterate :alexandria :queues)
-  (:export :solution-1 :shortest-path-length :shortest-path-length-2 :read-input :solution-2))
+(defpackage #:day-20
+  (:use #:cl #:aoc #:iterate #:alexandria #:queues)
+  (:export #:solution-1 #:shortest-path-length #:shortest-path-length-2 #:read-input #:solution-2))
 
-(in-package :day-20)
+(in-package #:day-20)
 
 (defconstant +start+ :AA)
 (defconstant +end+ :ZZ)
@@ -18,34 +18,34 @@
       (setf (gethash (cons x y) result) (schar s x)))
     (finally (return result))))
 
-(defun open-passage? (c)
+(defun open-passage-p (c)
   (and (characterp c) (char= c #\.)))
 
 (defun portal-id (char-1 location-1 char-location-2)
   (destructuring-bind (location-2 . char-2) char-location-2
     (destructuring-bind (x1 . y1) location-1
       (destructuring-bind (x2 . y2) location-2
-	(let* ((reversed? (or
+	(let* ((reversed (or
 			   (and (= x1 x2) (< y2 y1))
 			   (and (= y1 y2) (< x2 x1))))
-	       (char-list (if reversed? (list char-2 char-1) (list char-1 char-2))))
+	       (char-list (if reversed (list char-2 char-1) (list char-1 char-2))))
 	  (make-keyword (make-array 2 :initial-contents char-list :element-type 'character)))))))
 
-(defun is-portal? (k v map)
-  (flet ((upcase-char? (c)
+(defun portal-p (k v map)
+  (flet ((upcase-char (c)
 	   (and (characterp c) (upper-case-p c))))
-    (when (upcase-char? v)
+    (when (upcase-char v)
       (let* ((adjacent (mapcar (λ (v) (cons v (gethash v map))) (adjacent k)))
-	     (chars (remove-if-not (compose #'upcase-char? #'cdr) adjacent))
-	     (passages (remove-if-not (compose #'open-passage? #'cdr) adjacent)))
-	(when (and (= 1 (length chars) (length passages)))
+	     (chars (remove-if-not (compose #'upcase-char #'cdr) adjacent))
+	     (passages (remove-if-not (compose #'open-passage-p #'cdr) adjacent)))
+	(when (= 1 (length chars) (length passages))
 	  (let ((portal (portal-id v k (car chars))))
 	    (cons portal (caar passages))))))))
 
 (defun find-portals (map)
   (iter
    (for (k v) :in-hashtable map)
-   (when-let (portal (is-portal? k v map))
+   (when-let (portal (portal-p k v map))
      (collect portal))))
 
 (defun read-input (file)
@@ -65,7 +65,7 @@
 
 (defun locations-to-explore (map visited from distance)
   (let ((locations (remove-if (λ (p) (or
-				      (null (open-passage? (gethash p map)))
+				      (null (open-passage-p (gethash p map)))
 				      (gethash p visited)))
 			      (adjacent from))))
     (mapcar (λ (p) (make-search-location
@@ -163,8 +163,8 @@
 (defun inner-portals (queue map visited result)
   (if-let (location (qpop queue))
     (let ((locations (locations-to-explore-2 map visited location))
-	  (portal? (char= #\. (gethash location map))))
-      (if portal?
+	  (portal (char= #\. (gethash location map))))
+      (if portal
 	  (setf (gethash location result) t)
 	  (dolist (p locations)
 	    (when (null (gethash p visited))
@@ -183,7 +183,7 @@
 		      (let ((next-level (if (= +warp-distance+ distance)
 					    (if (gethash from inner-portals) (1+ level) (1- level))
 					    level)))
-			(cons (cons location next-level) distance))))
+			(acons location next-level distance))))
 		  locations)))
     (remove-if #'minusp result :key #'cdar)))
 

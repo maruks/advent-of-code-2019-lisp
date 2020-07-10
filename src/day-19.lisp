@@ -1,9 +1,9 @@
-(defpackage :day-19
-  (:use :cl :aoc :iterate :alexandria)
-  (:import-from :day-5 :run-program-1 :run-program-collect-results :allocate-program-memory)
-  (:export :solution-1 :solution-2))
+(defpackage #:day-19
+  (:use #:cl #:aoc #:iterate #:alexandria)
+  (:import-from #:day-5 #:run-program-1 #:run-program-collect-results #:allocate-program-memory)
+  (:export #:solution-1 #:solution-2))
 
-(in-package :day-19)
+(in-package #:day-19)
 
 (defconstant +map-size+ 50)
 (defconstant +square-size+ 100)
@@ -76,5 +76,5 @@
   (let* ((*program* (allocate-program-memory (read-input) 600))
 	 (*squares-map* (make-hash-table :test #'equal)))
     (destructuring-bind (x . y) (find-square +beam-start-scan+)
-      (assert (eq (test-location x y) (expt +square-size+ 2)))
+      (assert (eql (test-location x y) (expt +square-size+ 2)))
       (+ (* 10000 x) y))))

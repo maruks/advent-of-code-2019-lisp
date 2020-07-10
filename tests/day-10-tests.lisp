@@ -1,7 +1,7 @@
-(defpackage :day-10-tests
-  (:use :cl :cacau :assert-p :day-10 :aoc))
+(defpackage #:day-10-tests
+  (:use #:cl #:cacau #:assert-p #:day-10 #:aoc))
 
-(in-package :day-10-tests)
+(in-package #:day-10-tests)
 
 (defparameter *example-0*
   '(".#..#"

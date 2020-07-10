@@ -1,7 +1,7 @@
-(defpackage :day-16-tests
-  (:use :cl :cacau :assert-p :day-16 :alexandria))
+(defpackage #:day-16-tests
+  (:use #:cl #:cacau #:assert-p #:day-16 #:alexandria))
 
-(in-package :day-16-tests)
+(in-package #:day-16-tests)
 
 (defsuite :day-16 ()
 

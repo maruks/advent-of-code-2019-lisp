@@ -1,8 +1,8 @@
-(defpackage :day-5
-  (:use :cl :iterate :aoc)
-  (:export :solution-1 :solution-2 :decode :run-program :run-program-1 :allocate-program-memory :run-program-collect-results))
+(defpackage #:day-5
+  (:use #:cl #:iterate #:aoc)
+  (:export #:solution-1 #:solution-2 #:decode #:run-program #:run-program-1 #:allocate-program-memory #:run-program-collect-results))
 
-(in-package :day-5)
+(in-package #:day-5)
 
 (defconstant +add+ 1)
 (defconstant +multiply+ 2)

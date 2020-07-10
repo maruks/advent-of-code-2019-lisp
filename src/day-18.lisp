@@ -1,8 +1,8 @@
-(defpackage :day-18
-  (:use :cl :aoc :iterate :alexandria :queues)
-  (:export :solution-1 :solution-2 :shortest-distance :shortest-distance-2))
+(defpackage #:day-18
+  (:use #:cl #:aoc #:iterate #:alexandria #:queues)
+  (:export #:solution-1 #:solution-2 #:shortest-distance #:shortest-distance-2))
 
-(in-package :day-18)
+(in-package #:day-18)
 
 (defun read-input ()
   (read-lines (resource-file #p"day-18-input.txt")))
@@ -28,12 +28,12 @@
       (setf (aref map x y) c))
     (finally (return (values map start-location locations)))))
 
-(defun is-wall? (map location)
+(defun wall-p (map location)
   (char= (->location map location) #\#))
 
 (defun locations-to-explore (map visited from distance)
   (let ((locations (remove-if (λ (p) (or
-				      (is-wall? map p)
+				      (wall-p map p)
 				      (gethash p visited)))
 			      (adjacent from))))
     (mapcar (λ (p) (make-search-location
@@ -46,15 +46,15 @@
     (let* ((location (search-location-location sl))
 	   (distance (search-location-distance sl))
 	   (node (->location map location)))
-      (if (and (alpha-char-p node) (null (equal from location)))
-	  (progn
-	    (push (cons node distance) (gethash (->location map from) graph))
-	    (populate-graph queue from map graph visited))
-	  (let ((new-locations (locations-to-explore map visited location distance)))
-	    (dolist (p new-locations)
-	      (setf (gethash (search-location-location p) visited) t)
-	      (qpush queue p))
-	    (populate-graph queue from map graph visited))))))
+      (cond ((and (alpha-char-p node) (null (equal from location)))
+	     (push (cons node distance) (gethash (->location map from) graph))
+	     (populate-graph queue from map graph visited))
+	    (t
+	     (let ((new-locations (locations-to-explore map visited location distance)))
+	       (dolist (p new-locations)
+		 (setf (gethash (search-location-location p) visited) t)
+		 (qpush queue p))
+	       (populate-graph queue from map graph visited)))))))
 
 (defun build-graph (map locations)
   (iter
@@ -71,11 +71,11 @@
 	 (bitmask (ash 1 code)))
     (logior keys bitmask)))
 
-(defun is-key? (key)
+(defun key-p (key)
   (and (characterp key) (lower-case-p key)))
 
-(defun has-key? (key keys)
-  (and (is-key? key)
+(defun has-key-p (key keys)
+  (and (key-p key)
        (logbitp (- (char-code key) (char-code #\a)) keys)))
 
 (defun all-keys (graph)
@@ -90,7 +90,7 @@
 (defun is-locked-door? (door keys)
   (and (characterp door)
        (upper-case-p door)
-       (null (has-key? (char-downcase door) keys))))
+       (null (has-key-p (char-downcase door) keys))))
 
 (defvar *shortest-path-cache*)
 
@@ -122,12 +122,12 @@
 	  (queue (make-queue :priority-queue :compare #'compare-dist)))
       (qpush queue (cons from 0))
       (do-search queue graph keys visited result)
-      (remove-if-not (compose #'is-key? #'car) (hash-table-alist result)))))
+      (remove-if-not (compose #'key-p #'car) (hash-table-alist result)))))
 
 (defun do-search (queue graph keys visited results)
   (when-let (kd (qpop queue))
     (destructuring-bind (k . d) kd
-	(let* ((new-locations (remove-if
+	(let ((new-locations (remove-if
 			       (λ (kd) (or (gethash (car kd) visited)
 					   (is-locked-door? (car kd) keys)))
 			       (gethash k graph))))
@@ -135,10 +135,10 @@
 	    (for nkd :in new-locations)
 	    (for nk = (car nkd))
 	    (for new-kd = (cons nk (+ d (cdr nkd))))
-	    (if (and (is-key? nk) (null (has-key? nk keys)))
-		(add-to-results new-kd results)
-		(progn (qpush queue new-kd)
-		       (setf (gethash nk visited) t))))
+	    (cond
+	      ((and (key-p nk) (null (has-key-p nk keys))) (add-to-results new-kd results))
+	      (t (qpush queue new-kd)
+		 (setf (gethash nk visited) t))))
 	  (do-search queue graph keys visited results)))))
 
 (defun shortest-distance (input)
@@ -182,7 +182,7 @@
 	(shortest-path-2 robots graph 0 (all-keys-number (all-keys graph)))))))
 
 (defun shortest-path-2-args-hash (from keys)
-  (assert (eq 4 (length from)))
+  (assert (= 4 (length from)))
   (let ((sources (mapcar #'cons from (cons 26 (repeat 8 3)))))
     (reduce (λ (res ro)
 	      (destructuring-bind (src . offset) ro

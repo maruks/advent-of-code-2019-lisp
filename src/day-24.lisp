@@ -1,8 +1,8 @@
-(defpackage :day-24
-  (:use :cl :aoc :iterate :alexandria)
-  (:export :solution-1 :solution-2))
+(defpackage #:day-24
+  (:use #:cl #:aoc #:iterate #:alexandria)
+  (:export #:solution-1 #:solution-2))
 
-(in-package :day-24)
+(in-package #:day-24)
 
 (defconstant +bug+ #\#)
 (defconstant +empty+ #\.)
@@ -28,11 +28,11 @@
     (iter
       (for y :below +height+)
       (let* ((adjacent (adjacent-bugs x y map))
-	     (prev-bug? (char= +bug+ (aref map y x)))
-	     (next-bug? (if prev-bug?
-			    (eql 1 adjacent)
-			    (or (eql adjacent 1) (eql adjacent 2)))))
-	(setf (aref new-map y x) (if next-bug? +bug+ +empty+))))
+	     (prev-bug (char= +bug+ (aref map y x)))
+	     (next-bug (if prev-bug
+			    (= 1 adjacent)
+			    (or (= adjacent 1) (= adjacent 2)))))
+	(setf (aref new-map y x) (if next-bug +bug+ +empty+))))
     (finally (return new-map))))
 
 (defun rating (map)
@@ -58,12 +58,12 @@
     (finally (return map))))
 
 (defun first-layout (ratings map)
-  (let* ((rating (rating map)))
-    (if (gethash rating ratings)
-	rating
-	(progn
-	  (setf (gethash rating ratings) t)
-	  (first-layout ratings (update-map map))))))
+  (let ((rating (rating map)))
+    (cond
+      ((gethash rating ratings) rating)
+      (t
+       (setf (gethash rating ratings) t)
+       (first-layout ratings (update-map map))))))
 
 (defun solution-1 ()
   (let ((map (read-map (read-input))))
@@ -94,10 +94,10 @@
     (counting (char= +bug+ (aref map (car d) (cdr d))))))
 
 (defun adjacent-bugs-2 (xp yp level all-maps)
-  (labels ((inside-map? (x y)
+  (labels ((inside-map-p (x y)
 	     (and (>= x 0) (>= y 0) (< x +width+) (< y +height+)))
 	   (count-bugs (y x location)
-	     (multiple-value-bind (read-map read-x read-y) (if (inside-map? x y)
+	     (multiple-value-bind (read-map read-x read-y) (if (inside-map-p x y)
 							       (values (gethash level all-maps) x y)
 							       (values
 								(gethash (1- level) all-maps)
@@ -109,7 +109,7 @@
 								  ((minusp y) 1)
 								  ((>= y +height+) 3)
 								  (t 2))))
-	       (let* ((c (aref read-map read-y read-x)))
+	       (let ((c (aref read-map read-y read-x)))
 		 (cond ((char= c +sub-level+) (embedded-map-bugs (gethash (1+ level) all-maps) location))
 		       ((char= c +bug+) 1)
 		       (t 0))))))
@@ -128,13 +128,13 @@
     (iter
       (for y :below +height+)
       (let* ((adjacent (adjacent-bugs-2 x y level all-maps))
-	     (prev-bug? (char= +bug+ (aref map y x)))
-	     (next-bug? (if prev-bug?
-			    (eql 1 adjacent)
-			    (or (eql adjacent 1) (eql adjacent 2)))))
+	     (prev-bug (char= +bug+ (aref map y x)))
+	     (next-bug (if prev-bug
+			    (= 1 adjacent)
+			    (or (= adjacent 1) (= adjacent 2)))))
 	(setf (aref new-map y x) (cond
 				   ((char= (aref map y x) +sub-level+) +sub-level+)
-				   (next-bug? +bug+)
+				   (next-bug +bug+)
 				   (t +empty+)))))
     (finally (return new-map))))
 

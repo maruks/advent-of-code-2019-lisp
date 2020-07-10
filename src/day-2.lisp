@@ -1,8 +1,8 @@
-(defpackage :day-2
-  (:use :cl :iterate :advent-of-code)
-  (:export :solution-1 :run-intcode :solution-2))
+(defpackage #:day-2
+  (:use #:cl #:iterate #:advent-of-code)
+  (:export #:solution-1 #:run-intcode #:solution-2))
 
-(in-package :day-2)
+(in-package #:day-2)
 
 (defparameter *add* 1)
 (defparameter *multiply* 2)

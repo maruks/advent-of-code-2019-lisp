@@ -1,9 +1,9 @@
-(defpackage :day-11
-  (:use :cl :aoc :iterate :alexandria :zpng)
-    (:import-from :day-5 :run-program-1 :allocate-program-memory)
-    (:export :solution-1 :solution-2))
+(defpackage #:day-11
+  (:use #:cl #:aoc #:iterate #:alexandria #:zpng)
+  (:import-from #:day-5 #:run-program-1 #:allocate-program-memory)
+  (:export #:solution-1 #:solution-2))
 
-(in-package :day-11)
+(in-package #:day-11)
 
 (defun read-input ()
   (read-code (resource-file #p"day-11-input.txt")))

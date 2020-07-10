@@ -1,9 +1,9 @@
-(defpackage :day-7
-  (:use :cl :split-sequence :alexandria :iterate :aoc)
-  (:import-from :day-5 :run-program-1 :run-program)
-  (:export :solution-1 :solution-2))
+(defpackage #:day-7
+  (:use #:cl #:split-sequence #:alexandria #:iterate #:aoc)
+  (:import-from #:day-5 #:run-program-1 #:run-program)
+  (:export #:solution-1 #:solution-2))
 
-(in-package :day-7)
+(in-package #:day-7)
 
 (defvar *program*)
 (defvar *result*)

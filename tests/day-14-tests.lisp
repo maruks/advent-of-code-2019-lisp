@@ -1,7 +1,7 @@
-(defpackage :day-14-tests
-  (:use :cl :cacau :assert-p :day-14))
+(defpackage #:day-14-tests
+  (:use #:cl #:cacau #:assert-p #:day-14))
 
-(in-package :day-14-tests)
+(in-package #:day-14-tests)
 
 (defparameter *example-0*
   '("9 ORE => 2 A"

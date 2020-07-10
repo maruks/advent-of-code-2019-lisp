@@ -1,7 +1,7 @@
-(defpackage :day-8-tests
-  (:use :cl :cacau :assert-p :day-8))
+(defpackage #:day-8-tests
+  (:use #:cl #:cacau #:assert-p #:day-8))
 
-(in-package :day-8-tests)
+(in-package #:day-8-tests)
 
 (defsuite :day-8 ()
 

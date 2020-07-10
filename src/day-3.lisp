@@ -1,8 +1,8 @@
-(defpackage :day-3
-  (:use :cl :iterate :split-sequence :aoc)
-  (:export :solution-1 :solution-2 :->points :intersect :closest-intersection :lowest-steps))
+(defpackage #:day-3
+  (:use #:cl #:iterate #:split-sequence #:aoc)
+  (:export #:solution-1 #:solution-2 #:->points #:intersect #:closest-intersection #:lowest-steps))
 
-(in-package :day-3)
+(in-package #:day-3)
 
 (defparameter *central-point* (make-point :x 0 :y 0))
 

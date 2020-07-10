@@ -1,9 +1,9 @@
-(defpackage :day-12
-  (:use :cl :aoc :iterate :alexandria)
-  (:import-from :ppcre :all-matches-as-strings)
-  (:export :solution-1 :solution-2))
+(defpackage #:day-12
+  (:use #:cl #:aoc #:iterate #:alexandria)
+  (:import-from #:ppcre #:all-matches-as-strings)
+  (:export #:solution-1 #:solution-2))
 
-(in-package :day-12)
+(in-package #:day-12)
 
 (defparameter *regex* #r"-?\\d+")
 

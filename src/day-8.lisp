@@ -1,8 +1,8 @@
-(defpackage :day-8
-  (:use :cl :zpng :iterate :aoc)
-  (:export :solution-1 :solution-2))
+(defpackage #:day-8
+  (:use #:cl #:zpng #:iterate #:aoc)
+  (:export #:solution-1 #:solution-2))
 
-(in-package :day-8)
+(in-package #:day-8)
 
 (defun read-input ()
   (uiop:read-file-string (resource-file "day-8-input.txt")))

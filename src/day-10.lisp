@@ -1,8 +1,8 @@
-(defpackage :day-10
-  (:use :cl :aoc :iterate :alexandria)
-  (:export :read-map :visible-points :best-location-point :solution-1 :solution-2))
+(defpackage #:day-10
+  (:use #:cl #:aoc #:iterate #:alexandria)
+  (:export #:read-map #:visible-points #:best-location-point #:solution-1 #:solution-2))
 
-(in-package :day-10)
+(in-package #:day-10)
 
 (defun read-map (lines)
   (iter outer

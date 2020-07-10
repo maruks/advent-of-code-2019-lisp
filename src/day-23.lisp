@@ -1,9 +1,9 @@
-(defpackage :day-23
-  (:use :cl :aoc :iterate :alexandria :queues)
-  (:import-from :day-5 :run-program-1 :allocate-program-memory)
-  (:export :solution-1 :solution-2))
+(defpackage #:day-23
+  (:use #:cl #:aoc #:iterate #:alexandria #:queues)
+  (:import-from #:day-5 #:run-program-1 #:allocate-program-memory)
+  (:export #:solution-1 #:solution-2))
 
-(in-package :day-23)
+(in-package #:day-23)
 
 (defparameter *nat* nil)
 (defparameter *prev-nat-y* nil)

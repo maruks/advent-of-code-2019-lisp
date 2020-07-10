@@ -1,8 +1,8 @@
-(defpackage :day-4
-  (:use :cl :aoc)
-  (:export :solution-1 :solution-2))
+(defpackage #:day-4
+  (:use #:cl #:aoc)
+  (:export #:solution-1 #:solution-2))
 
-(in-package :day-4)
+(in-package #:day-4)
 
 (defun test-number (number &optional prev-digit has-double?)
   (if (plusp number)

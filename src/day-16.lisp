@@ -1,8 +1,8 @@
-(defpackage :day-16
-  (:use :cl :aoc :iterate :alexandria)
-  (:export :solution-1 :solution-2 :pattern-number :process-all))
+(defpackage #:day-16
+  (:use #:cl #:aoc #:iterate #:alexandria)
+  (:export #:solution-1 #:solution-2 #:pattern-number #:process-all))
 
-(in-package :day-16)
+(in-package #:day-16)
 
 (defun read-input ()
   (mapcar (lambda (d) (- (char-code d) 48))

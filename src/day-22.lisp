@@ -1,9 +1,9 @@
-(defpackage :day-22
-  (:use :cl :aoc :iterate :alexandria)
-  (:import-from :str :split :upcase :join)
-  (:export :solution-1 :solution-2))
+(defpackage #:day-22
+  (:use #:cl #:aoc #:iterate #:alexandria)
+  (:import-from #:str #:split #:upcase #:join)
+  (:export #:solution-1 #:solution-2))
 
-(in-package :day-22)
+(in-package #:day-22)
 
 (defconstant +number-of-cards+ 10007)
 

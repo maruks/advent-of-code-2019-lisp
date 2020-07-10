@@ -1,8 +1,8 @@
-(defpackage :day-9-tests
-  (:use :cl :cacau :assert-p :day-9)
-    (:import-from :day-5 :run-program :allocate-program-memory :run-program-collect-results))
+(defpackage #:day-9-tests
+  (:use #:cl #:cacau #:assert-p #:day-9)
+  (:import-from #:day-5 #:run-program #:allocate-program-memory #:run-program-collect-results))
 
-(in-package :day-9-tests)
+(in-package #:day-9-tests)
 
 (defsuite :day-9 ()
 

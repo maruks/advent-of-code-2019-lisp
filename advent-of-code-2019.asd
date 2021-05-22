@@ -37,8 +37,8 @@
 			     (:file "day-22")
 			     (:file "day-23")
 			     (:file "day-24")
-			     (:file "main")
-			     )))
+			     (:file "day-25")
+			     (:file "main"))))
   :in-order-to ((test-op (test-op "advent-of-code-2019/tests"))))
 
 (defsystem "advent-of-code-2019/tests"
@@ -73,5 +73,5 @@
 			     (:file "day-22-tests")
 			     (:file "day-23-tests")
 			     (:file "day-24-tests")
-			     )))
+			     (:file "day-25-tests"))))
   :perform (test-op (o c) (symbol-call 'cacau 'run :colorful t :reporter :list)))

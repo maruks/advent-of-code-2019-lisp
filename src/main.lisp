@@ -40,7 +40,7 @@
   (day 23 "Category Six")
   (day 23 "Category Six")
   (day 24 "Planet of Discord")
-  )
+  (day 25 "Cryostasis"))
 
 (defun main ()
   (call-with-fatal-condition-handler #'run))

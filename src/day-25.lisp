@@ -1,7 +1,7 @@
 (defpackage #:day-25
   (:use #:cl #:aoc #:iterate #:alexandria #:queues)
   (:import-from #:day-5 #:run-program-1 #:allocate-program-memory)
-  (:import-from #:str #:lines #:starts-with? #:concat)
+  (:import-from #:str #:lines #:starts-with? #:concat #:containsp)
   (:export #:solution-1 #:solution-2))
 
 (in-package #:day-25)
@@ -34,11 +34,14 @@
 
 (defun run-droid (droid &optional input output)
   (multiple-value-bind (next-ip result status) (run-program-1 (droid-code droid) (input->ascii input) (droid-ip droid))
-    (setf (droid-ip droid) next-ip)
+
+    (when (not (eq status :halt))
+	(setf (droid-ip droid) next-ip))
+
     (ecase status
+      (:halt (coerce (mapcar #'code-char (nreverse output)) 'string))
       (:output (run-droid droid nil (cons result output)))
-      (:input (progn (format t "~a ~%"  (coerce (mapcar #'code-char (reverse output)) 'string))
-		     (coerce (mapcar #'code-char (nreverse output)) 'string))))))
+      (:input (coerce (mapcar #'code-char (nreverse output)) 'string)))))
 
 (defparameter *security-checkpoint* "== Security Checkpoint ==")
 
@@ -105,32 +108,44 @@
 	  (collect-all-items droid next-commands room)
 	  room))))
 
-(defun move-droid (droid commands)
+(defun execute-commands (droid commands)
   (when-let (cmd (car commands))
     (run-droid droid cmd)
-    (move-droid droid (cdr commands))))
+    (execute-commands droid (cdr commands))))
+
+(defun drop-all (droid)
+  (let* ((out (run-droid droid "inv"))
+	 (lines (lines out))
+	 (items (scan-output "Items in your inventory:" lines)))
+    (execute-commands droid (mapcar (curry #'concat "drop ") items))
+    items))
+
+(defun select-items (droid items attempt &optional selected-items)
+  (if (zerop attempt)
+      (execute-commands droid (mapcar (curry #'concat "take ") selected-items))
+      (if (zerop (logand attempt 1))
+	  (select-items droid (cdr items) (ash attempt -1) selected-items)
+	  (select-items droid (cdr items) (ash attempt -1) (cons (car items) selected-items)))))
+
+(defun get-past-sensor (droid items attempt)
+  (drop-all droid)
+  (select-items droid items attempt)
+  (let* ((out (run-droid droid "south"))
+	 (lines (lines out))
+	 (ejected? (find-if (curry #'containsp "you are ejected back to the checkpoint") lines)))
+    (if ejected?
+	(get-past-sensor droid items (1+ attempt))
+	(apply #'concat lines))))
 
 (defun solution-1 ()
-
   (let* ((code (read-input))
 	 (program (allocate-program-memory code 6000))
 	 (*map* (make-hash-table :test #'equal))
 	 (droid (make-droid :code program))
-	 (room (collect-all-items droid))
-	 )
-
+	 (room (collect-all-items droid)))
     (setf *skip-security-checkpoint* nil)
-
-    (format t "============================================ ~a ~a ~%" room (nearest-unopened-door room))
-
-    (move-droid droid (nearest-unopened-door room))
-    (move-droid droid (list "inv"))
-
-    *map*
-
-    )
-
-  )
+    (execute-commands droid (nearest-unopened-door room))
+    (get-past-sensor droid (drop-all droid) 0)))
 
 (defun solution-2 ()
-  )
+  "Congratulations! You've finished every puzzle in Advent of Code 2019!")

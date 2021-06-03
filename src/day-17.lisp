@@ -1,12 +1,12 @@
 (defpackage #:day-17
   (:use #:cl #:aoc #:iterate #:alexandria)
-  (:import-from #:day-5 #:run-program-collect-results #:allocate-program-memory)
+  (:import-from #:intcode #:file->program #:run-program #:copy-code #:program-code)
   (:export #:solution-1 #:solution-2))
 
 (in-package #:day-17)
 
 (defun read-input ()
-  (read-code (resource-file #p"day-17-input.txt")))
+  (file->program #p"day-17-input.txt" 4000))
 
 (defun populate-map (xs map &optional (x 0) (y 0))
   (if-let (code (car xs))
@@ -27,10 +27,10 @@
       (collect k))))
 
 (defun solution-1 ()
-  (let* ((input (allocate-program-memory (read-input) 3800))
-	 (out (run-program-collect-results input '()))
+  (let* ((input (read-input))
+	 (out (run-program input))
 	 (map (populate-map out (make-hash-table :test #'equal))))
-    (reduce #'+ (mapcar (lambda (p) (* (car p) (cdr p))) (locate-intersections map)) :initial-value 0)))
+    (reduce #'+ (mapcar (λ (p) (* (car p) (cdr p))) (locate-intersections map)) :initial-value 0)))
 
 (defun find-robot-location (map)
   (iter
@@ -108,8 +108,8 @@
   (list (char-code #\n) (char-code #\Newline)))
 
 (defun solution-2 ()
-  (let* ((input (allocate-program-memory (read-input) 3800))
-	 (out (run-program-collect-results (copy-array input) '()))
+  (let* ((input (read-input))
+	 (out (run-program (copy-code input)))
 	 (map (populate-map out (make-hash-table :test #'equal)))
 	 (path-str (path-to-string (collect-path map (find-robot-location map) :up)))
 	 (compressed-path (compress-path path-str 3))
@@ -118,5 +118,8 @@
 			 (string->ascii main-cmd)
 			 (mappend #'string->ascii compressed-path)
 			 (video-feed))))
-    (setf (svref input 0) 2)
-    (car (last (run-program-collect-results input program-input)))))
+    (setf (aref (program-code input) 0) 2)
+    (->> program-input
+      (run-program input :input)
+      last
+      car)))

@@ -1,6 +1,6 @@
 (defpackage #:day-19
   (:use #:cl #:aoc #:iterate #:alexandria)
-  (:import-from #:day-5 #:run-program-1 #:run-program-collect-results #:allocate-program-memory)
+  (:import-from #:intcode #:file->program #:run-program #:copy-code)
   (:export #:solution-1 #:solution-2))
 
 (in-package #:day-19)
@@ -10,7 +10,7 @@
 (define-constant +beam-start-scan+ (cons 5 4) :test #'equal)
 
 (defun read-input ()
-  (read-code (resource-file #p"day-19-input.txt")))
+  (file->program #p"day-19-input.txt"))
 
 (defvar *program*)
 
@@ -23,18 +23,15 @@
       (in outer (counting result)))))
 
 (defun solution-1 ()
-  (let ((*program* (allocate-program-memory (read-input) 600)))
+  (let ((*program* (read-input)))
     (scan-map)))
 
 (defparameter *scan-location-cache* (make-hash-table))
 
 (defun scan-location (x y)
   (memoize-function *scan-location-cache* (logior (ash x 16) y)
-    (->> 0
-      (run-program-1 (copy-array *program*) (list x y))
-      (multiple-value-list)
-      (second)
-      (eq 1))))
+    (->> (run-program (copy-code *program*) :input (list x y) :max-outputs 1)
+      (= 1))))
 
 (defun test-location (x y)
   (iter outer
@@ -73,7 +70,7 @@
     (finally (return (find-square (cons x y))))))
 
 (defun solution-2 ()
-  (let* ((*program* (allocate-program-memory (read-input) 600))
+  (let* ((*program* (read-input))
 	 (*squares-map* (make-hash-table :test #'equal)))
     (destructuring-bind (x . y) (find-square +beam-start-scan+)
       (assert (eql (test-location x y) (expt +square-size+ 2)))

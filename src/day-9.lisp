@@ -1,17 +1,17 @@
 (defpackage #:day-9
   (:use #:cl #:aoc)
-  (:import-from #:day-5 #:run-program #:allocate-program-memory #:run-program-collect-results)
+  (:import-from #:intcode #:file->program #:run-program)
   (:export #:solution-1 #:solution-2))
 
 (in-package #:day-9)
 
 (defun read-input ()
-  (read-code (resource-file #p"day-9-input.txt")))
+  (file->program #p"day-9-input.txt"))
 
 (defun solution-1 ()
-  (let* ((input (read-input)))
-    (run-program-collect-results (allocate-program-memory input 1200) '(1))))
+  (let* ((program (read-input)))
+    (run-program program :input '(1) :max-outputs 1)))
 
 (defun solution-2 ()
-  (let* ((input (read-input)))
-    (run-program-collect-results (allocate-program-memory input 1200) '(2))))
+  (let* ((program (read-input)))
+    (run-program program :input '(2) :max-outputs 1)))

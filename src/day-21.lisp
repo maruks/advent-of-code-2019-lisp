@@ -1,33 +1,20 @@
 (defpackage #:day-21
   (:use #:cl #:aoc #:iterate #:alexandria)
-  (:import-from #:day-5 #:run-program-1 #:run-program-collect-results #:allocate-program-memory)
+  (:import-from #:intcode #:file->program #:run-program)
   (:import-from #:str #:concat #:add-suffix)
   (:export #:solution-1 #:solution-2))
 
 (in-package #:day-21)
 
 (defun read-input ()
-  (read-code (resource-file #p"day-21-input.txt")))
+  (file->program #p"day-21-input.txt"))
 
 (defvar *program*)
 
 (defun run-droid-code (code)
   (let ((input (->> (coerce (apply #'concat (add-suffix code (string #\Newline))) 'list)
 		 (mapcar #'char-code))))
-    (run-program-collect-results *program* input))
-  )
-
-(defun print-out (out)
-  (let ((r
-	  (make-array (list (length out)) :initial-contents (mapcar #'code-char out) :element-type 'character)))
-
-    (with-open-file (stream #p"/tmp/lol"
-			    :direction :output
-			    :if-exists :overwrite
-			    :if-does-not-exist :create)
-      (format stream r))
-
-    ))
+    (run-program *program* :input input)))
 
 (defparameter *code-1*
   '("NOT A J"
@@ -53,9 +40,9 @@
     "RUN"))
 
 (defun solution-1 ()
-  (let ((*program* (allocate-program-memory (read-input) 3000)))
+  (let ((*program* (read-input)))
     (-> (run-droid-code *code-1*) (last) (car))))
 
 (defun solution-2 ()
-  (let ((*program* (allocate-program-memory (read-input) 3000)))
+  (let ((*program* (read-input)))
     (-> (run-droid-code *code-2*) (last) (car))))

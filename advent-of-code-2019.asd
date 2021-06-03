@@ -13,6 +13,7 @@
 
   :components ((:module "src"
 		:components ((:file "advent-of-code")
+			     (:file "intcode")
 			     (:file "day-1")
 			     (:file "day-2")
 			     (:file "day-3")
@@ -49,7 +50,8 @@
 	       :assert-p)
   :serial t
   :components ((:module "tests"
-		:components ((:file "day-1-tests")
+		:components ((:file "intcode-tests")
+                             (:file "day-1-tests")
 			     (:file "day-2-tests")
 			     (:file "day-3-tests")
 			     (:file "day-4-tests")

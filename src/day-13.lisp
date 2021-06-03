@@ -1,34 +1,22 @@
 (defpackage #:day-13
   (:use #:cl #:aoc #:iterate #:alexandria)
-  (:import-from #:day-5 #:run-program-1 #:allocate-program-memory)
+  (:import-from #:intcode #:file->program #:run-program #:read-intcode #:allocate-program #:program-status)
   (:export #:solution-1 #:solution-2))
 
 (in-package #:day-13)
 
-(defun read-input ()
-  (read-code (resource-file #p"day-13-input.txt")))
-
-(defun read-outputs (program number &optional (ip 0) inputs results)
-  (if (zerop number)
-      (values ip (nreverse results))
-      (multiple-value-bind (next-ip result status next-inputs) (run-program-1 program inputs ip)
-	(if (eq status :output)
-	    (read-outputs program (1- number) next-ip next-inputs (cons result results))
-	    (values next-ip (nreverse results))))))
-
-(defun populate-board (board program &optional (ip 0))
-  (multiple-value-bind (next-ip results) (read-outputs program 3 ip)
-      (when (= 3 (length results))
-	(setf (gethash (cons (car results) (cadr results)) board) (caddr results))
-	(when next-ip
-	  (populate-board board program next-ip)))))
+(defun populate-board (board outputs)
+  (when outputs
+    (setf (gethash (cons (car outputs) (cadr outputs)) board) (caddr outputs))
+    (populate-board board (cdddr outputs))))
 
 (defparameter *block* 2)
 
 (defun solution-1 ()
-  (let* ((input (read-input))
-	 (board (make-hash-table :test #'equal)))
-    (populate-board board (allocate-program-memory input))
+  (let* ((input (file->program #p"day-13-input.txt"))
+	 (board (make-hash-table :test #'equal))
+	 (outputs (run-program input)))
+    (populate-board board outputs)
     (length (delete-if-not (curry #'eql *block*) (hash-table-values board)))))
 
 (defun joystick (paddle ball)
@@ -38,22 +26,20 @@
 
 (defun run-game (program)
   (iter
-    (with ip = 0)
     (with paddle = 0)
     (with ball = 0)
     (with score = 0)
-    (multiple-value-bind (next-ip results) (read-outputs program 3 ip (list (joystick paddle ball)))
-      (while next-ip)
-      (setq ip next-ip)
+    (let ((results (run-program program :max-outputs 3 :input (list (joystick paddle ball)))))
+      (until (eq :halt (program-status program)))
       (destructuring-bind (x y tile) results
 	(when (and (= x -1) (zerop y))
-	  (setq score (caddr results)))
+	  (setq score tile))
 	(case tile
 	  (3 (setq paddle x))
 	  (4 (setq ball x))))
       (finally (return score)))))
 
 (defun solution-2 ()
-  (let ((input (read-input)))
-    (setf (svref input 0) 2)
-    (run-game (allocate-program-memory input 2700))))
+  (let ((input (read-intcode #p"day-13-input.txt")))
+    (setf (aref input 0) 2)
+    (run-game (allocate-program input))))

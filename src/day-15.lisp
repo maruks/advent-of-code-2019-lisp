@@ -1,32 +1,29 @@
 (defpackage #:day-15
   (:use #:cl #:aoc #:iterate #:alexandria #:queues)
-  (:import-from #:day-5 #:run-program-1 #:allocate-program-memory)
+  (:import-from #:intcode #:file->program #:run-program #:copy-code)
   (:export #:solution-1 #:solution-2))
 
 (in-package #:day-15)
 
 (defun read-input ()
-  (read-code (resource-file #p"day-15-input.txt")))
+  (file->program #p"day-15-input.txt"))
 
-(defun do-step (program ip direction)
-  (multiple-value-bind (next-ip result status) (run-program-1 program (list direction) ip)
-    (when (eq status :output)
-      (values result next-ip))))
+(defun do-step (program direction)
+  (run-program program :input (list direction) :max-outputs 1))
 
-(defstruct droid program ip location distance)
+(defstruct droid program location distance)
 
 (defun move-droid (droid direction)
-  (let ((program (copy-array (droid-program droid)))
-	(next-distance (1+ (droid-distance droid)))
-	(next-location (-> droid (droid-location) (move-location direction))))
-    (multiple-value-bind (out next-ip) (do-step program (droid-ip droid) direction)
-      (ecase out
-	(0 nil)
-	(1 (make-droid :program program
-		       :ip next-ip
-		       :location next-location
-		       :distance next-distance))
-	(2 (cons next-distance next-location))))))
+  (let* ((program (copy-code (droid-program droid)))
+	 (next-distance (1+ (droid-distance droid)))
+	 (next-location (-> droid (droid-location) (move-location direction)))
+	 (out (do-step program direction)))
+    (ecase out
+      (0 nil)
+      (1 (make-droid :program program
+		     :location next-location
+		     :distance next-distance))
+      (2 (cons next-distance next-location)))))
 
 (defun move-location (point direction)
   (ecase direction
@@ -54,11 +51,11 @@
 (defun shortest-path (program)
   (let ((queue (make-queue :simple-queue))
 	(visited (make-hash-table :test #'equalp)))
-    (qpush queue (make-droid :program program :ip 0 :distance 0 :location (make-point :x 0 :y 0)))
+    (qpush queue (make-droid :program program :distance 0 :location (make-point :x 0 :y 0)))
     (search-oxygen queue visited)))
 
 (defun solution-1 ()
-  (let ((input (allocate-program-memory (read-input))))
+  (let ((input (read-input)))
     (shortest-path input)))
 
 (defun print-xy (x y map what)
@@ -78,16 +75,15 @@
     (format t "~%")))
 
 (defun move-droid-2 (droid direction)
-  (let ((program (copy-array (droid-program droid)))
-	(next-distance (1+ (droid-distance droid)))
-	(next-location (move-location (droid-location droid) direction)))
-    (multiple-value-bind (out next-ip) (do-step program (droid-ip droid) direction)
-      (if (zerop out)
-	  (cons (point-x next-location) (point-y next-location))
-	  (make-droid :program program
-		      :ip next-ip
-		      :location next-location
-		      :distance next-distance)))))
+  (let* ((program (copy-code (droid-program droid)))
+	 (next-distance (1+ (droid-distance droid)))
+	 (next-location (move-location (droid-location droid) direction))
+	 (out (do-step program direction)))
+    (if (zerop out)
+	(cons (point-x next-location) (point-y next-location))
+	(make-droid :program program
+		    :location next-location
+		    :distance next-distance))))
 
 (defun explore-map (droid visited map)
   (let* ((location (droid-location droid))
@@ -119,9 +115,9 @@
 (defun solution-2 ()
   (let ((map (make-hash-table :test #'equal))
 	(visited (make-hash-table :test #'equalp))
-	(input (allocate-program-memory (read-input) 1200)))
+	(input (read-input)))
     (explore-map
-     (make-droid :program input :ip 0 :distance 0 :location (make-point :x 0 :y 0))
+     (make-droid :program input :distance 0 :location (make-point :x 0 :y 0))
      visited
      map)
     ;; (print-map-2 map :wall)

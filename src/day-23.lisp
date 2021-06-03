@@ -1,13 +1,12 @@
 (defpackage #:day-23
   (:use #:cl #:aoc #:iterate #:alexandria #:queues)
-  (:import-from #:day-5 #:run-program-1 #:allocate-program-memory)
+  (:import-from #:intcode #:file->program #:run-program #:copy-code #:program-status)
   (:export #:solution-1 #:solution-2))
 
 (in-package #:day-23)
 
 (defparameter *nat* nil)
 (defparameter *prev-nat-y* nil)
-(defparameter *ips* nil)
 (defparameter *computers* nil)
 (defparameter *queues* nil)
 
@@ -15,18 +14,17 @@
 (defconstant +nat-address+ 255)
 
 (defun read-input ()
-  (read-code (resource-file #p"day-23-input.txt")))
+  (file->program #p"day-23-input.txt"))
 
 (defun solution (run-fn)
   (let ((code (read-input))
 	(*nat* nil)
 	(*prev-nat-y* nil)
 	(*computers* (make-array +number-of-computers+))
-	(*queues* (make-array +number-of-computers+))
-	(*ips* (make-array +number-of-computers+ :initial-element 0)))
+	(*queues* (make-array +number-of-computers+)))
     (iter
       (for i :below +number-of-computers+)
-      (setf (svref *computers* i) (allocate-program-memory code 2600))
+      (setf (svref *computers* i) (copy-code code))
       (let ((io-queue (make-queue :simple-queue)))
 	(setf (svref *queues* i) io-queue)
 	(qpush io-queue i)))
@@ -37,16 +35,14 @@
 
 (defun run-computer (idx &optional is-input? outputs)
   (let* ((program (svref *computers* idx))
-	 (ip (svref *ips* idx))
 	 (queue (svref *queues* idx))
 	 (input (when is-input?
 		  (qpop queue)))
 	 (inputs (when is-input?
 		   (list (or input -1)))))
-    (multiple-value-bind (next-ip result status) (run-program-1 program inputs ip)
-      (setf (svref *ips* idx) next-ip)
-      (ecase status
-	(:output (run-computer idx nil (cons result outputs)))
+    (let ((result (run-program program :input inputs :max-outputs 1)))
+      (ecase (program-status program)
+	(:running (run-computer idx nil (cons result outputs)))
 	(:input (if (and is-input? (null input))
 		    (nreverse outputs)
 		    (run-computer idx t outputs)))))))

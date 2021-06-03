@@ -39,13 +39,13 @@
 	 (input (when is-input?
 		  (qpop queue)))
 	 (inputs (when is-input?
-		   (list (or input -1)))))
-    (let ((result (run-program program :input inputs :max-outputs 1)))
-      (ecase (program-status program)
-	(:running (run-computer idx nil (cons result outputs)))
-	(:input (if (and is-input? (null input))
-		    (nreverse outputs)
-		    (run-computer idx t outputs)))))))
+		   (list (or input -1))))
+	 (result (run-program program :input inputs :max-outputs 1)))
+    (ecase (program-status program)
+      (:running (run-computer idx nil (cons result outputs)))
+      (:input (if (and is-input? (null input))
+		  (nreverse outputs)
+		  (run-computer idx t outputs))))))
 
 (defun run-computers-1 ()
   (iter

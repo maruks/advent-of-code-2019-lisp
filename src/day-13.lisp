@@ -1,6 +1,6 @@
 (defpackage #:day-13
   (:use #:cl #:aoc #:iterate #:alexandria)
-  (:import-from #:intcode #:file->program #:run-program #:read-intcode #:allocate-program #:program-status)
+  (:import-from #:intcode #:file->program #:run-program #:read-intcode #:allocate-program #:program-status #:program-code)
   (:export #:solution-1 #:solution-2))
 
 (in-package #:day-13)
@@ -12,8 +12,11 @@
 
 (defparameter *block* 2)
 
+(defun read-input ()
+  (file->program #p"day-13-input.txt"))
+
 (defun solution-1 ()
-  (let* ((input (file->program #p"day-13-input.txt"))
+  (let* ((input (read-input))
 	 (board (make-hash-table :test #'equal))
 	 (outputs (run-program input)))
     (populate-board board outputs)
@@ -40,6 +43,6 @@
       (finally (return score)))))
 
 (defun solution-2 ()
-  (let ((input (read-intcode #p"day-13-input.txt")))
-    (setf (aref input 0) 2)
-    (run-game (allocate-program input))))
+  (let ((input (read-input)))
+    (setf (aref (program-code input) 0) 2)
+    (run-game input)))

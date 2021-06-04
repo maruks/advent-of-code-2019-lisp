@@ -4,8 +4,6 @@
 
 (in-package #:day-20)
 
-(defconstant +start+ :AA)
-(defconstant +end+ :ZZ)
 (defconstant +warp-distance+ 1)
 
 (defun read-map (lines)

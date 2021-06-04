@@ -4,8 +4,6 @@
 
 (in-package #:day-20)
 
-(defconstant +start+ :AA)
-(defconstant +end+ :ZZ)
 (defconstant +warp-distance+ 1)
 
 (defun read-map (lines)
@@ -78,10 +76,11 @@
     (let* ((location (search-location-location sl))
 	   (distance (search-location-distance sl))
 	   (locations (locations-to-explore map visited location distance)))
-      (when (and (gethash location graph)
-		 (< distance (gethash location results 1000000))
-		 (plusp distance))
-	(setf (gethash location results) distance))
+      (multiple-value-bind (_v present-p) (gethash location graph)
+	(when (and present-p
+		   (< distance (gethash location results 1000000))
+		   (plusp distance))
+	  (setf (gethash location results) distance)))
       (setf (gethash location visited) t)
       (dolist (p locations)
 	(qpush queue p))

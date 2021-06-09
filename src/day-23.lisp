@@ -1,5 +1,6 @@
 (defpackage #:day-23
-  (:use #:cl #:aoc #:iterate #:alexandria #:queues)
+  (:use #:cl #:aoc #:queues)
+  (:import-from #:alexandria #:define-constant)
   (:import-from #:intcode #:file->program #:run-program #:copy-code #:program-status)
   (:export #:solution-1 #:solution-2))
 
@@ -20,8 +21,7 @@
 	(*prev-nat-y* nil)
 	(computers (make-array +number-of-computers+))
 	(queues (make-array +number-of-computers+)))
-    (iter
-      (for i :below +number-of-computers+)
+    (dotimes (i +number-of-computers+)
       (setf (svref computers i) (copy-code code))
       (let ((io-queue (make-queue :simple-queue)))
 	(setf (svref queues i) io-queue)
@@ -46,8 +46,7 @@
 		  (run-computer computers queues idx t outputs))))))
 
 (defun run-computers-1 (computers queues)
-  (iter
-    (for i :below +number-of-computers+)
+  (dotimes (i +number-of-computers+)
     (->> (run-computer computers queues i)
       (dispatch-packets queues)))
   (or *nat* (run-computers-1 computers queues)))
@@ -72,8 +71,7 @@
 
 (defun run-computers-2 (computers queues)
   (let ((packets-sent 0))
-    (iter
-      (for i :below +number-of-computers+)
+    (dotimes (i +number-of-computers+)
       (let ((packets (run-computer computers queues i)))
 	(dispatch-packets queues packets)
 	(incf packets-sent (length packets))))

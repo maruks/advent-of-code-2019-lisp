@@ -1,7 +1,6 @@
 (defpackage #:day-12
   (:use #:cl #:aoc)
   (:import-from #:alexandria #:iota #:curry #:define-constant #:hash-table-values)
-  (:import-from #:iterate #:iter #:for #:finally #:collect #:with #:sum)
   (:import-from #:ppcre #:all-matches-as-strings)
   (:export #:solution-1 #:solution-2))
 
@@ -24,25 +23,21 @@
 
 (defun pairs-indices ()
   (flet ((pair-sort (a b) (if (< a b) (cons a b) (cons b a))))
-    (iter
-      (with map = (make-hash-table :test #'equal))
-      (for x :below +number-of-moons+)
-      (iter
-	(for y :below +number-of-moons+)
-	(let ((pair (pair-sort x y)))
-	  (when (and (null (gethash pair map)) (/= x y))
-	    (setf (gethash pair map) pair))))
-      (finally (return (hash-table-values map))))))
+    (let ((map (make-hash-table :test #'equal)))
+      (dotimes (x +number-of-moons+)
+	(dotimes (y +number-of-moons+)
+	  (let ((pair (pair-sort x y)))
+	    (when (and (null (gethash pair map)) (/= x y))
+	      (setf (gethash pair map) pair)))))
+      (hash-table-values map))))
 
 (defun move-moons (moons axis-list)
   (flet ((->position (moon axis) (svref (moon-position (svref moons moon)) axis))
 	 (->velocity (moon axis) (svref (moon-velocity (svref moons moon)) axis))
 	 (change-velocity (moon axis delta) (incf (svref (moon-velocity (svref moons moon)) axis) delta))
 	 (change-position (moon axis delta) (incf (svref (moon-position (svref moons moon)) axis) delta)))
-    (iter
-      (for idx :in (pairs-indices))
-      (iter
-	(for axis :in axis-list)
+    (dolist (idx (pairs-indices))
+      (dolist (axis axis-list)
 	(let* ((m-1 (car idx))
 	       (m-2 (cdr idx))
 	       (p-1 (->position m-1 axis))
@@ -50,12 +45,10 @@
 	  (when (/= p-1 p-2)
 	    (change-velocity m-1 axis (if (< p-1 p-2) 1 -1))
 	    (change-velocity m-2 axis (if (< p-2 p-1) 1 -1))))))
-    (iter
-      (for m :below +number-of-moons+)
-      (iter
-	(for axis :in axis-list)
-	(change-position m axis (->velocity m axis)))
-      (finally (return moons)))))
+    (dotimes (m +number-of-moons+)
+      (dolist (axis axis-list)
+	(change-position m axis (->velocity m axis))))
+    moons))
 
 (defun run-simulation (moons steps)
   (dotimes (i steps moons)
@@ -64,10 +57,11 @@
 (defun energy (moons)
   (flet ((do-sum (moon-slot moon-idx)
 	   (reduce #'+ (map 'list #'abs (funcall moon-slot (svref moons moon-idx))))))
-    (iter
-      (for i :below +number-of-moons+)
-      (sum (* (do-sum #'moon-velocity i)
-	      (do-sum #'moon-position i))))))
+    (reduce
+     (λ (s i) (+ s (* (do-sum #'moon-velocity i)
+		      (do-sum #'moon-position i))))
+     (iota +number-of-moons+)
+     :initial-value 0)))
 
 (defun solution-1 ()
   (-> #p"day-12-input.txt"
@@ -85,13 +79,13 @@
     (if axis-list
 	(progn
 	  (move-moons moons axis-list)
-	  (let* ((found (iter
-			  (for i :in axis-list)
-			  (when (and (every #'zerop (mapcar (curry #'->velocity i) (iota +number-of-moons+)))
-				     (equal (positions moons i) (svref initial-positions i))
-				     (zerop (svref cycles i)))
-			    (setf (svref cycles i) (1+ steps))
-			    (collect i)))))
+	  (let ((found (remove-if-not
+			(λ (i) (and (every #'zerop (mapcar (curry #'->velocity i) (iota +number-of-moons+)))
+				    (equal (positions moons i) (svref initial-positions i))
+				    (zerop (svref cycles i))))
+			axis-list)))
+	    (dolist (i found)
+	      (setf (svref cycles i) (1+ steps)))
 	    (number-of-steps moons initial-positions cycles (1+ steps) (set-difference axis-list found))))
 	(apply #'lcm (coerce cycles 'list)))))
 
@@ -99,7 +93,6 @@
   (let ((moons (moons-vector (read-input #p"day-12-input.txt")))
 	(cycles (make-array '(3) :initial-element 0))
 	(initial-positions (make-array (list +number-of-moons+))))
-    (iter
-      (for i :below 3)
+    (dotimes (i 3)
       (setf (svref initial-positions i) (positions moons i)))
     (number-of-steps moons initial-positions cycles)))

@@ -10,7 +10,7 @@
     (setf (gethash (cons (car outputs) (cadr outputs)) board) (caddr outputs))
     (populate-board board (cdddr outputs))))
 
-(defparameter *block* 2)
+(define-constant +block+ 2)
 
 (defun read-input ()
   (file->program #p"day-13-input.txt"))
@@ -20,7 +20,7 @@
 	 (board (make-hash-table :test #'equal))
 	 (outputs (run-program input)))
     (populate-board board outputs)
-    (length (delete-if-not (curry #'eql *block*) (hash-table-values board)))))
+    (length (delete-if-not (curry #'eql +block+) (hash-table-values board)))))
 
 (defun joystick (paddle ball)
   (cond ((< paddle ball) 1)

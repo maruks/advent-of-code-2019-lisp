@@ -8,12 +8,12 @@
   (mapcar (lambda (d) (- (char-code d) 48))
 	  (car (read-lines (resource-file #p"day-16-input.txt") (rcurry #'coerce 'list)))))
 
-(defparameter *base-pattern* '(0 1 0 -1))
+(define-constant +base-pattern+ '(0 1 0 -1) :test #'equal)
 
 (defun pattern-number (position index)
   (nth
-   (rem (truncate (1+ index) (1+ position)) (length *base-pattern*))
-   *base-pattern*))
+   (rem (truncate (1+ index) (1+ position)) (length +base-pattern+))
+   +base-pattern+))
 
 (defun fft (position prev-list &optional (index 0) (sum 0))
   (if-let (n (car prev-list))

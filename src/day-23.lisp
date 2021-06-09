@@ -10,8 +10,8 @@
 (defparameter *computers* nil)
 (defparameter *queues* nil)
 
-(defconstant +number-of-computers+ 50)
-(defconstant +nat-address+ 255)
+(define-constant +number-of-computers+ 50)
+(define-constant +nat-address+ 255)
 
 (defun read-input ()
   (file->program #p"day-23-input.txt"))

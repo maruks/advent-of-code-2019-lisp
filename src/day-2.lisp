@@ -1,12 +1,13 @@
 (defpackage #:day-2
   (:use #:cl #:iterate #:advent-of-code)
+  (:import-from #:alexandria #:define-constant)
   (:export #:solution-1 #:run-intcode #:solution-2))
 
 (in-package #:day-2)
 
-(defparameter *add* 1)
-(defparameter *multiply* 2)
-(defparameter *halt* 99)
+(define-constant +add+ 1)
+(define-constant +multiply+ 2)
+(define-constant +halt+ 99)
 
 (defun binary-op (fn ip code)
   (let* ((op-1 (svref code (1+ ip)))
@@ -19,9 +20,9 @@
 (defun do-step (ip code)
   (let ((opcode (svref code ip)))
     (cond
-      ((eql opcode *add*) (binary-op #'+ ip code))
-      ((eql opcode *multiply*) (binary-op #'* ip code))
-      ((eql opcode *halt*) nil)
+      ((eql opcode +add+) (binary-op #'+ ip code))
+      ((eql opcode +multiply+) (binary-op #'* ip code))
+      ((eql opcode +halt+) nil)
       (t (error "Invalid opcode")))))
 
 (defun run-intcode (code)

@@ -1,23 +1,23 @@
-(defpackage :advent-of-code
-  (:use :cl :uiop/stream :split-sequence :iterate)
-  (:nicknames :aoc)
-  (:import-from :ppcre :create-scanner)
-  (:import-from :alexandria :with-gensyms :if-let)
-  (:export read-file read-lines read-string read-code resource-file
-	   sort-by-distance-fn print-hash repeat print-map print-2d-array
-	   make-point point-x point-y manhattan-distance distance
-	   compare-points adjacent memoize-function λ -> ->>))
+(defpackage #:advent-of-code
+  (:use #:cl #:uiop/stream #:split-sequence #:iterate)
+  (:nicknames #:aoc)
+  (:import-from #:ppcre #:create-scanner)
+  (:import-from #:alexandria #:with-gensyms #:if-let #:define-constant)
+  (:export #:read-file #:read-lines #:read-string #:read-code #:resource-file
+	   #:sort-by-distance-fn #:print-hash #:repeat #:print-map #:print-2d-array
+	   #:make-point #:point-x #:point-y #:manhattan-distance #:distance
+	   #:compare-points #:adjacent #:memoize-function #:λ #:-> #:->>))
 
 (in-package :advent-of-code)
 
-(defparameter *resources* (asdf/system:system-relative-pathname :advent-of-code-2019 "resources/"))
+(define-constant +resources+ (asdf/system:system-relative-pathname :advent-of-code-2019 "resources/"))
 
 (defmacro λ (&whole whole args &body body)
   (declare (ignore args body))
   (cons 'lambda (cdr whole)))
 
 (defun resource-file (p)
-  (merge-pathnames p *resources*))
+  (merge-pathnames p +resources+))
 
 (defun read-file (file)
   (read-file-lines (resource-file file)))

@@ -1,10 +1,11 @@
 (defpackage #:day-3
   (:use #:cl #:iterate #:split-sequence #:aoc)
+  (:import-from #:alexandria #:define-constant)
   (:export #:solution-1 #:solution-2 #:->points #:intersect #:closest-intersection #:lowest-steps))
 
 (in-package #:day-3)
 
-(defparameter *central-point* (make-point :x 0 :y 0))
+(define-constant +central-point+ (make-point :x 0 :y 0) :test #'equalp)
 
 (defun read-input ()
   (let* ((lines (read-file "day-3-input.txt"))
@@ -39,7 +40,7 @@
 			(moved (move-point (car head) (cdr head) prev-point)))
 		   (->pts (cons prev-point result) (cdr moves) moved))
 		 (nreverse (cons prev-point result)))))
-    (->pts nil moves *central-point*)))
+    (->pts nil moves +central-point+)))
 
 (defun closest-intersection (moves-1 moves-2)
   (let ((points-1 (->points moves-1))
@@ -57,7 +58,7 @@
 	(for i = (intersect p1a p1b p2a p2b))
 	(when (or (null i) (equalp i (cons 0 0)))
 	  (next-iteration))
-	(in outer (minimize (manhattan-distance *central-point* (make-point :x (car i) :y (cdr i)))))))))
+	(in outer (minimize (manhattan-distance +central-point+ (make-point :x (car i) :y (cdr i)))))))))
 
 (defun lowest-steps (moves-1 moves-2)
   (let ((points-1 (->points moves-1))

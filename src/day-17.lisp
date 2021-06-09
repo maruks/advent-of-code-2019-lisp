@@ -1,5 +1,7 @@
 (defpackage #:day-17
-  (:use #:cl #:aoc #:iterate #:alexandria)
+  (:use #:cl #:aoc)
+  (:import-from #:iterate #:iter #:for #:collect #:finding)
+  (:import-from #:alexandria #:if-let #:curry #:rcurry #:iota #:mappend)
   (:import-from #:intcode #:file->program #:run-program #:copy-code #:program-code)
   (:export #:solution-1 #:solution-2))
 

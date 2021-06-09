@@ -21,8 +21,9 @@
     (reduce #'+ results :initial-value orbits)))
 
 (defun solution-1 ()
-  (let ((graph (read-input #p"day-6-input.txt")))
-    (count-orbits :COM graph)))
+  (->> #p"day-6-input.txt"
+    read-input
+    (count-orbits :COM)))
 
 (defun path-to (from to graph &optional visited)
   (let ((children (gethash from graph)))

@@ -49,19 +49,19 @@
     (draw-image file panels)
     file))
 
-(defparameter *width* 100)
-(defparameter *height* 100)
+(define-constant +width+ 100)
+(define-constant +height+ 100)
 
 (defun get-pixel (x y panels)
-  (let ((px (- x (truncate *width* 2)))
-	(py (- y (truncate *height* 2))))
+  (let ((px (- x (truncate +width+ 2)))
+	(py (- y (truncate +height+ 2))))
     (* 255 (gethash (cons px py) panels 0))))
 
 (defun draw-image (file panels)
   (let ((png (make-instance 'pixel-streamed-png
 			    :color-type :grayscale
-			    :width *width*
-			    :height *height*)))
+			    :width +width+
+			    :height +height+)))
     (with-open-file (stream file
 			    :direction :output
 			    :if-exists :supersede
@@ -69,8 +69,8 @@
 			    :element-type '(unsigned-byte 8))
       (start-png png stream)
       (iter
-	(for y :below *height*)
+	(for y :below +height+)
 	(iter
-	  (for x :below *width*)
+	  (for x :below +width+)
 	  (write-pixel (list (get-pixel x y panels)) png)))
       (finish-png png))))

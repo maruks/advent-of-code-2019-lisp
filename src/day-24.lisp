@@ -81,16 +81,17 @@
     (setf (aref map 2 2) +sub-level+)
     map))
 
-(defparameter *location-deltas*
+(define-constant +location-deltas+
   (list
    :top (mapcar (curry #'cons 0) (iota +width+))
    :bottom (mapcar (curry #'cons (1- +height+)) (iota +width+))
    :left (mapcar (rcurry #'cons 0) (iota +height+))
-   :right (mapcar (rcurry #'cons (1- +width+)) (iota +height+))))
+   :right (mapcar (rcurry #'cons (1- +width+)) (iota +height+)))
+  :test #'equal)
 
 (defun embedded-map-bugs (map location)
   (iter
-    (for d :in (getf *location-deltas* location))
+    (for d :in (getf +location-deltas+ location))
     (counting (char= +bug+ (aref map (car d) (cdr d))))))
 
 (defun adjacent-bugs-2 (xp yp level all-maps)

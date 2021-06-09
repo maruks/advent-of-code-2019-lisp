@@ -1,5 +1,6 @@
 (defpackage #:day-8
   (:use #:cl #:zpng #:iterate #:aoc)
+  (:import-from #:alexandria #:define-constant)
   (:export #:solution-1 #:solution-2))
 
 (in-package #:day-8)
@@ -7,14 +8,14 @@
 (defun read-input ()
   (uiop:read-file-string (resource-file "day-8-input.txt")))
 
-(defparameter *width* 25)
-(defparameter *height* 6)
-(defparameter *layer-size* (* *width* *height*))
+(define-constant +width+ 25)
+(define-constant +height+ 6)
+(define-constant +layer-size+ (* +width+ +height+))
 
 (defun number-of-digits (image digit layer)
   (iter
-    (with offset = (* *layer-size* layer))
-    (for i :from offset :below (+ *layer-size* offset))
+    (with offset = (* +layer-size+ layer))
+    (for i :from offset :below (+ +layer-size+ offset))
     (counting (char= digit (schar image i)))))
 
 (defun fewest-digits-layer (image digit layers)
@@ -25,7 +26,7 @@
 (defun solution-1 ()
   (let* ((input (read-input))
 	 (size (length input))
-	 (layers (truncate size *layer-size*))
+	 (layers (truncate size +layer-size+))
 	 (layer (fewest-digits-layer input #\0 layers)))
     (* (number-of-digits input #\1 layer) (number-of-digits input #\2 layer))))
 
@@ -36,8 +37,8 @@
     file))
 
 (defun get-pixel (x y image &optional (layer 0))
-  (let* ((offset (* layer *layer-size*))
-	 (idx (+ offset x (* y *width*)))
+  (let* ((offset (* layer +layer-size+))
+	 (idx (+ offset x (* y +width+)))
 	 (p (schar image idx)))
     (ecase (intern (string p) "KEYWORD")
       (:0 255)
@@ -47,8 +48,8 @@
 (defun draw-image (file image)
   (let ((png (make-instance 'pixel-streamed-png
 			    :color-type :grayscale
-			    :width *width*
-			    :height *height*)))
+			    :width +width+
+			    :height +height+)))
     (with-open-file (stream file
 			    :direction :output
 			    :if-exists :supersede
@@ -56,8 +57,8 @@
 			    :element-type '(unsigned-byte 8))
       (start-png png stream)
       (iter
-	(for y :below *height*)
+	(for y :below +height+)
 	(iter
-	  (for x :below *width*)
+	  (for x :below +width+)
 	  (write-pixel (list (get-pixel x y image)) png)))
       (finish-png png))))

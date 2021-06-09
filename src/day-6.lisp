@@ -16,23 +16,20 @@
 	  (setf (gethash k result) (if (null vals) (list v) (cons v vals))))
 	(finally (return result))))))
 
-(defvar *graph*)
-
-(defun count-orbits (node &optional (orbits 0))
-  (let ((results (mapcar (rcurry #'count-orbits (1+ orbits)) (gethash node *graph*))))
+(defun count-orbits (node graph &optional (orbits 0))
+  (let ((results (mapcar (rcurry #'count-orbits graph (1+ orbits)) (gethash node graph))))
     (reduce #'+ results :initial-value orbits)))
 
 (defun solution-1 ()
-  (let ((*graph* (read-input #p"day-6-input.txt")))
-    (count-orbits :COM)))
+  (let ((graph (read-input #p"day-6-input.txt")))
+    (count-orbits :COM graph)))
 
-(defun path-to (from to &optional visited)
-  (let ((children (gethash from *graph*)))
+(defun path-to (from to graph &optional visited)
+  (let ((children (gethash from graph)))
     (if (eq from to)
 	(nreverse visited)
-	(let ((results (mapcar (rcurry #'path-to to (cons from visited)) children)))
+	(let ((results (mapcar (rcurry #'path-to to graph (cons from visited)) children)))
 	  (find-if-not #'null results)))))
-
 
 (defun orbital-distance (path-1 path-2)
   (if (eq (car path-1) (car path-2))
@@ -40,5 +37,5 @@
       (+ (length path-1) (length path-2))))
 
 (defun solution-2 ()
-  (let ((*graph* (read-input #p"day-6-input.txt")))
-    (orbital-distance (path-to :COM :SAN) (path-to :COM :YOU))))
+  (let ((graph (read-input #p"day-6-input.txt")))
+    (orbital-distance (path-to :COM :SAN graph) (path-to :COM :YOU graph))))

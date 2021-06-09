@@ -35,17 +35,14 @@
 
 (define-constant +security-checkpoint+ "== Security Checkpoint ==" :test #'string=)
 
-(defparameter *skip-security-checkpoint* T)
-
-(defparameter *map* nil)
-
-(defun find-nearest-unopened-door (queue visited)
+(defun find-nearest-unopened-door (map queue visited skip-security-checkpoint)
   (when-let (room-doors (qpop queue))
     (destructuring-bind (room &rest doors) room-doors
-      (let* ((all-door-rooms (gethash room *map*))
-	     (door-rooms (if (and *skip-security-checkpoint* (string= room +security-checkpoint+))
-				  (remove-if (compose (curry #'string= "south") #'car) all-door-rooms)
-				  all-door-rooms)))
+      (let* ((all-door-rooms (gethash room map))
+	     (door-rooms (if (and skip-security-checkpoint
+				  (string= room +security-checkpoint+))
+			     (remove-if (compose (curry #'string= "south") #'car) all-door-rooms)
+			     all-door-rooms)))
 	(if-let (door-room (find-if (compose (curry #'eq :unopened) #'cdr) door-rooms))
 	  (nreverse (cons (car door-room) doors))
 	  (progn
@@ -53,21 +50,21 @@
 	      (destructuring-bind (d . r) rd
 		(when (null (gethash r visited))
 		  (qpush queue (cons r (cons d doors)))
-		  (setf (gethash r visited) T))))
-	    (find-nearest-unopened-door queue visited)))))))
+		  (setf (gethash r visited) t))))
+	    (find-nearest-unopened-door map queue visited skip-security-checkpoint)))))))
 
-(defun nearest-unopened-door (room)
+(defun nearest-unopened-door (map room &optional (skip-security-checkpoint t))
   (let ((queue (make-queue :simple-queue)))
     (qpush queue (list room))
-    (find-nearest-unopened-door queue (make-hash-table :test #'equal))))
+    (find-nearest-unopened-door map queue (make-hash-table :test #'equal) skip-security-checkpoint)))
 
-(defun visit (room doors prev-room prev-door)
-  (multiple-value-bind (room-doors found?) (gethash room *map*)
+(defun visit (map room doors prev-room prev-door)
+  (multiple-value-bind (room-doors found?) (gethash room map)
     (declare (ignore room-doors))
     (when (null found?)
-      (setf (gethash room *map*) (mapcar (rcurry #'cons :unopened) doors)))
+      (setf (gethash room map) (mapcar (rcurry #'cons :unopened) doors)))
     (when (and prev-room prev-door)
-      (let* ((prev-room-doors (gethash prev-room *map*))
+      (let* ((prev-room-doors (gethash prev-room map))
 	     (door-next-room (assoc prev-door prev-room-doors :test #'string=)))
 	(setf (cdr door-next-room) room)))))
 
@@ -76,26 +73,23 @@
     (run-droid program (concat "take " item))
     (take-items (cdr items) program)))
 
-(defun collect-all-items (program &optional commands prev-room)
+(define-constant +unsafe-items+ '("escape pod" "infinite loop" "molten lava" "photons" "giant electromagnet") :test #'equal)
+
+(defun collect-all-items (map program &optional commands prev-room)
   (let* ((out (run-droid program (car commands)))
 	 (lines (lines out))
 	 (room (room-name lines))
 	 (doors (scan-output "Doors here lead:" lines))
 	 (items (scan-output "Items here:" lines))
-	 (safe-items (remove-if (λ (item) (or (string= item "escape pod")
-					      (string= item "infinite loop")
-					      (string= item "molten lava")
-					      (string= item "photons")
-					      (string= item "giant electromagnet")))
-				items)))
+	 (safe-items (remove-if (λ (item) (member item +unsafe-items+ :test #'string=)) items)))
     (when safe-items
       (take-items safe-items program))
 
-    (visit room doors prev-room (car commands))
+    (visit map room doors prev-room (car commands))
 
-    (let ((next-commands (or (cdr commands) (nearest-unopened-door room))))
+    (let ((next-commands (or (cdr commands) (nearest-unopened-door map room))))
       (if next-commands
-	  (collect-all-items program next-commands room)
+	  (collect-all-items map program next-commands room)
 	  room))))
 
 (defun execute-commands (program commands)
@@ -136,11 +130,9 @@
 
 (defun solution-1 ()
   (let* ((program (read-input))
-	 (*map* (make-hash-table :test #'equal))
-	 (*skip-security-checkpoint* T)
-	 (room (collect-all-items program)))
-    (setf *skip-security-checkpoint* nil)
-    (execute-commands program (nearest-unopened-door room))
+	 (map (make-hash-table :test #'equal))
+	 (room (collect-all-items map program)))
+    (execute-commands program (nearest-unopened-door map room nil))
     (->> program
       drop-all
       (get-past-sensor program)

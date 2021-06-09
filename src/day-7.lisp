@@ -1,5 +1,7 @@
 (defpackage #:day-7
-  (:use #:cl #:split-sequence #:alexandria #:iterate #:aoc)
+  (:use #:cl #:aoc)
+  (:import-from #:alexandria #:if-let #:curry)
+  (:import-from #:iterate #:iter #:for #:finally #:while)
   (:import-from #:intcode #:file->program #:run-program #:copy-code #:program-ip #:program-status)
   (:export #:solution-1 #:solution-2))
 
@@ -8,52 +10,51 @@
 (defun read-input ()
   (file->program #p"day-7-input.txt"))
 
-(defvar *program*)
-(defvar *result*)
-
-(defun run-amplifier (phase-settings &optional (input 0))
+(defun run-amplifier (program phase-settings &optional (input 0))
   (if-let (phase (car phase-settings))
-    (run-amplifier (cdr phase-settings) (run-program (copy-code *program*) :input (list phase input) :max-outputs 1))
-    (when (< *result* input)
-      (setq *result* input))))
+    (run-amplifier program (cdr phase-settings) (run-program (copy-code program) :input (list phase input) :max-outputs 1))
+    input))
+
+(defun permutations (inputs &optional result)
+  (if inputs
+      (mapcan (λ (e) (permutations (remove e inputs) (cons e result))) inputs)
+      (list result)))
 
 (defun solution-1 ()
-  (let ((*program* (read-input))
-	(*result* 0))
-    (map-permutations #'run-amplifier '(0 1 2 3 4))
-    *result*))
+  (->> '(0 1 2 3 4)
+    permutations
+    (mapcar (curry #'run-amplifier (read-input)))
+    (reduce #'max)))
 
-(defparameter *amp-code* (make-array 5))
-
-(defun run-cycle (phase-settings &optional (input 0))
+(defun run-cycle (phase-settings amp-code &optional (input 0))
   (iter
     (for i :below 5)
     (for in = (if (zerop i) input out))
     (for out = (run-program
-		(svref *amp-code* i)
-		:input (if (zerop (program-ip (svref *amp-code* i)))
+		(svref amp-code i)
+		:input (if (zerop (program-ip (svref amp-code i)))
 			   (list (nth i phase-settings) in)
 			   (list in))
 		:max-outputs 1))
     (finally (return out))))
 
-(defun run-until-halt (phase-settings)
+(defun run-until-halt (phase-settings amp-code)
   (iter
-    (for out = (run-cycle phase-settings p-out))
+    (for out = (run-cycle phase-settings amp-code p-out))
     (for p-out :previous out :initially 0)
     (while out)
     (finally (return p-out))))
 
-(defun run-amplifiers (phase-settings)
-  (iter
-    (for i :below 5)
-    (setf (svref *amp-code* i) (copy-code *program*)))
-  (let ((result (run-until-halt phase-settings)))
-    (when (< *result* result)
-      (setq *result* result))))
+(defun run-amplifiers (program phase-settings)
+  (let* ((amplifiers 5)
+	 (amp-code (make-array amplifiers)))
+    (iter
+      (for i :below amplifiers)
+      (setf (svref amp-code i) (copy-code program)))
+    (run-until-halt phase-settings amp-code)))
 
 (defun solution-2 ()
-  (let ((*program* (read-input))
-	(*result* 0))
-    (map-permutations #'run-amplifiers '(5 6 7 8 9))
-    *result*))
+  (->> '(5 6 7 8 9)
+    permutations
+    (mapcar (curry #'run-amplifiers (read-input)))
+    (reduce #'max)))

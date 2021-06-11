@@ -121,10 +121,8 @@
 	(get-past-sensor program items (1+ attempt))
 	(apply #'concat lines))))
 
-(define-constant +regex+ #r"You should be able to get in by typing (\\d+)" :test (constantly t))
-
 (defun find-keypad-code (text)
-  (multiple-value-bind (match substrings) (scan-to-strings +regex+ text)
+  (multiple-value-bind (match substrings) (scan-to-strings "You should be able to get in by typing (\\d+)" text)
     (when match
       (aref substrings 0))))
 

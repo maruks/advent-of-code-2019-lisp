@@ -1,11 +1,10 @@
 (defpackage #:day-14
-  (:use #:cl #:aoc #:iterate #:alexandria #:ppcre)
+  (:use #:cl #:aoc #:iterate)
+  (:import-from #:alexandria #:hash-table-keys #:alist-hash-table #:define-constant #:compose #:when-let #:rcurry #:curry)
+  (:import-from #:ppcre #:all-matches-as-strings)
   (:export #:solution-1 #:find-required-ore-for-input #:solution-2))
 
 (in-package #:day-14)
-
-(define-constant +number+ #r"\\d+" :test (constantly t))
-(define-constant +chemical+ #r"[A-Z]+" :test (constantly t))
 
 (defstruct reaction inputs output amount)
 
@@ -13,8 +12,8 @@
 (define-constant +ore+ 'ORE)
 
 (defun str->reaction (s)
-  (let* ((numbers (mapcar #'parse-integer (reverse (all-matches-as-strings +number+ s))))
-	 (chemicals (mapcar (rcurry #'intern :day-14) (reverse (all-matches-as-strings +chemical+ s))))
+  (let* ((numbers (mapcar #'parse-integer (reverse (all-matches-as-strings "\\d+" s))))
+	 (chemicals (mapcar (rcurry #'intern :day-14) (reverse (all-matches-as-strings "[A-Z]+" s))))
 	 (inputs (pairlis (cdr chemicals) (cdr numbers))))
     (make-reaction :inputs inputs :output (car chemicals) :amount (car numbers))))
 
@@ -79,7 +78,7 @@
   (let ((chemicals (alist-hash-table (reaction-inputs (gethash +fuel+ reactions)) :test #'eq)))
     (when fuel
       (iter
-	(for (c a) in-hashtable chemicals)
+	(for c in (hash-table-keys chemicals))
 	(setf (gethash c chemicals) (* fuel (gethash c chemicals)))))
     (how-much-ore reactions chemicals (make-hash-table :test #'eq))))
 

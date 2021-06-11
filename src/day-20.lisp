@@ -76,7 +76,8 @@
     (let* ((location (search-location-location sl))
 	   (distance (search-location-distance sl))
 	   (locations (locations-to-explore map visited location distance)))
-      (multiple-value-bind (_v present-p) (gethash location graph)
+      (multiple-value-bind (v present-p) (gethash location graph)
+	(declare (ignore v))
 	(when (and present-p
 		   (< distance (gethash location results 1000000))
 		   (plusp distance))

@@ -10,14 +10,13 @@
 
 (in-package :advent-of-code)
 
-(define-constant +resources+ (asdf/system:system-relative-pathname :advent-of-code-2019 "resources/"))
-
 (defmacro λ (&whole whole args &body body)
   (declare (ignore args body))
   (cons 'lambda (cdr whole)))
 
 (defun resource-file (p)
-  (merge-pathnames p +resources+))
+  (let ((resources (load-time-value (asdf/system:system-relative-pathname :advent-of-code-2019 "resources/"))))
+    (merge-pathnames p resources)))
 
 (defun read-file (file)
   (read-file-lines (resource-file file)))
@@ -81,14 +80,6 @@
   (iter
     (for i :below n)
     (collect value)))
-
-;; regex #r macro
-(defun regex-reader (stream char-1 char-2)
-  (declare (ignore char-1))
-  (declare (ignore char-2))
-  `(create-scanner ,(read stream t nil t)))
-
-(set-dispatch-macro-character #\# #\r #'regex-reader)
 
 (defmacro memoize-function (table-name hash-fn &body body)
   (with-gensyms (hash-key cached-value hit)

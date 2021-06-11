@@ -9,7 +9,7 @@
 (define-constant +number-of-moons+ 4)
 
 (defun read-input (file)
-  (flet ((parse-line (s) (mapcar #'parse-integer (all-matches-as-strings #r"-?\\d+" s))))
+  (flet ((parse-line (s) (mapcar #'parse-integer (all-matches-as-strings "-?\\d+" s))))
     (read-lines (resource-file file) #'parse-line)))
 
 (defstruct moon position velocity)
